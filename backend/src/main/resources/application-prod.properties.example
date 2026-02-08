@@ -1,0 +1,16 @@
+# ============================================
+# CONFIGURACIÓN PARA PRODUCCIÓN
+# ============================================
+# Copia este archivo como application-prod.properties
+# o usa variables de entorno
+
+# Credenciales del admin (NUNCA commitees este archivo con passwords reales)
+app.admin.username=admin
+app.admin.password=TU_PASSWORD_SEGURO_AQUI
+app.admin.create-on-startup=true
+
+# Base de datos (ejemplo con MySQL)
+# spring.datasource.url=jdbc:mysql://localhost:3306/tumascotandil
+# spring.datasource.username=tu_usuario_db
+# spring.datasource.password=tu_password_db
+# spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect

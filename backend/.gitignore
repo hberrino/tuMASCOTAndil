@@ -1,0 +1,72 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+application-prod.properties
+*.properties.local
+.env
+.env.local
+.env.*.local
+
+### CREDENCIALES Y ARCHIVOS SENSIBLES ###
+# IMPORTANTE: application.properties contiene credenciales de BD
+# Usa application.properties.example como plantilla
+src/main/resources/application.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-*.properties
+!src/main/resources/application.properties.example
+!src/main/resources/application-prod.properties.example
+
+# Docker compose con credenciales hardcodeadas
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Archivos de secretos
+*.pem
+*.key
+*.cert
+*.p12
+*.jks
+*.keystore
+*.truststore
+secrets/
+
+### Docker ###
+uploads/
+*.log
+
+### Database ###
+*.db
+*.sqlite
+*.sql
+!schema.sql
+!migrations/*.sql
