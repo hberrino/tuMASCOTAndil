@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
-import { getPostsPendientes, aprobarPost, rechazarPost, verificarBackend } from '../services/api';
+import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend } from '../services/api';
 
 const Admin = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [posts, setPosts] = useState([]);
+  const [postsPublicados, setPostsPublicados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+  const [vistaActiva, setVistaActiva] = useState('pendientes'); // 'pendientes' o 'publicados'
+  const [modalConfirmacion, setModalConfirmacion] = useState({ 
+    mostrar: false, 
+    tipo: '', // 'eliminar' o 'rechazar'
+    id: null,
+    nombreMascota: ''
+  });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -85,12 +93,25 @@ const Admin = ({ onClose }) => {
     }
   };
 
+  const cargarPostsPublicados = async () => {
+    try {
+      setLoading(true);
+      const data = await getPostsPublicados();
+      setPostsPublicados(data);
+    } catch (err) {
+      setError('Error al cargar posts publicados.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const savedUsername = sessionStorage.getItem('admin_username');
     const savedPassword = sessionStorage.getItem('admin_password');
     
     if (savedUsername && savedPassword) {
       cargarPostsPendientes();
+      cargarPostsPublicados();
     }
   }, []);
 
@@ -143,7 +164,31 @@ const Admin = ({ onClose }) => {
     }
   };
 
-  const handleRechazar = async (id) => {
+  const abrirModalConfirmacion = (tipo, id, nombreMascota) => {
+    setModalConfirmacion({
+      mostrar: true,
+      tipo,
+      id,
+      nombreMascota: nombreMascota || 'esta mascota'
+    });
+  };
+
+  const cerrarModalConfirmacion = () => {
+    setModalConfirmacion({ mostrar: false, tipo: '', id: null, nombreMascota: '' });
+  };
+
+  const confirmarAccion = async () => {
+    const { tipo, id } = modalConfirmacion;
+    cerrarModalConfirmacion();
+
+    if (tipo === 'eliminar') {
+      await ejecutarEliminar(id);
+    } else if (tipo === 'rechazar') {
+      await ejecutarRechazar(id);
+    }
+  };
+
+  const ejecutarRechazar = async (id) => {
     const savedUsername = sessionStorage.getItem('admin_username');
     const savedPassword = sessionStorage.getItem('admin_password');
 
@@ -153,10 +198,6 @@ const Admin = ({ onClose }) => {
         texto: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
       });
       handleLogout();
-      return;
-    }
-
-    if (!window.confirm('¿Estás seguro de que deseas rechazar este post?')) {
       return;
     }
 
@@ -173,6 +214,56 @@ const Admin = ({ onClose }) => {
       }, 500);
     } catch (err) {
       let errorMessage = 'Error al rechazar el post. Intenta nuevamente.';
+      
+      if (err.response?.status === 401) {
+        errorMessage = 'No autorizado. Verifica tus credenciales.';
+        handleLogout();
+      } else if (err.response?.status === 404) {
+        errorMessage = 'Post no encontrado.';
+      } else if (err.response?.status === 403) {
+        errorMessage = 'No tienes permisos para realizar esta acción.';
+      } else if (err.response?.status) {
+        errorMessage = `Error del servidor (${err.response.status}): ${err.response.statusText || 'Error desconocido'}`;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setMensaje({
+        tipo: 'error',
+        texto: errorMessage,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const ejecutarEliminar = async (id) => {
+    const savedUsername = sessionStorage.getItem('admin_username');
+    const savedPassword = sessionStorage.getItem('admin_password');
+
+    if (!savedUsername || !savedPassword) {
+      setMensaje({
+        tipo: 'error',
+        texto: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
+      });
+      handleLogout();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMensaje({ tipo: '', texto: '' });
+      await eliminarPost(id, savedUsername, savedPassword);
+      setMensaje({
+        tipo: 'success',
+        texto: 'Post eliminado exitosamente.',
+      });
+      setTimeout(async () => {
+        await cargarPostsPendientes();
+        await cargarPostsPublicados();
+      }, 500);
+    } catch (err) {
+      let errorMessage = 'Error al eliminar el post. Intenta nuevamente.';
       
       if (err.response?.status === 401) {
         errorMessage = 'No autorizado. Verifica tus credenciales.';
@@ -331,94 +422,292 @@ const Admin = ({ onClose }) => {
         </div>
       )}
 
-      <div className="mb-6 p-4 bg-gray-100 rounded-lg">
-        <p className="text-base md:text-lg">
-          Posts pendientes: <strong>{posts.length}</strong>
-        </p>
+      {/* Tabs para cambiar entre pendientes y publicados */}
+      <div className="mb-6 flex gap-2 border-b border-gray-200">
+        <button
+          onClick={() => setVistaActiva('pendientes')}
+          className={`px-4 py-2 font-medium text-sm md:text-base transition-colors ${
+            vistaActiva === 'pendientes'
+              ? 'border-b-2 border-indigo-600 text-indigo-600'
+              : 'text-gray-600 hover:text-gray-800'
+          }`}
+        >
+          Pendientes ({posts.length})
+        </button>
+        <button
+          onClick={() => {
+            setVistaActiva('publicados');
+            cargarPostsPublicados();
+          }}
+          className={`px-4 py-2 font-medium text-sm md:text-base transition-colors ${
+            vistaActiva === 'publicados'
+              ? 'border-b-2 border-indigo-600 text-indigo-600'
+              : 'text-gray-600 hover:text-gray-800'
+          }`}
+        >
+          Publicados ({postsPublicados.length})
+        </button>
       </div>
 
-      {loading && posts.length === 0 ? (
-        <div className="text-center text-gray-600 py-12">Cargando posts pendientes...</div>
-      ) : posts.length === 0 ? (
-        <div className="text-center text-gray-600 py-12">
-          <p>No hay posts pendientes de aprobación.</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="bg-white rounded-xl shadow-md p-4 md:p-6 flex flex-col md:flex-row gap-4"
-            >
-              <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
-                {post.imagenUrl ? (
-                  <img
-                    src={`http://localhost:8080${post.imagenUrl}`}
-                    alt={post.nombreMascota || 'Mascota'}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    Sin imagen
+      {/* Vista de Posts Pendientes */}
+      {vistaActiva === 'pendientes' && (
+        <>
+          {loading && posts.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">Cargando posts pendientes...</div>
+          ) : posts.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">
+              <p>No hay posts pendientes de aprobación.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {posts.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-xl shadow-md p-4 md:p-6 flex flex-col md:flex-row gap-4"
+                >
+                  <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
+                    {post.imagenUrl ? (
+                      <img
+                        src={`http://localhost:8080${post.imagenUrl}`}
+                        alt={post.nombreMascota || 'Mascota'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        Sin imagen
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="flex-1 space-y-3">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                  {post.nombreMascota || 'Sin nombre'}
-                </h3>
-                
-                {post.descripcion && (
-                  <p className="text-gray-600 text-sm md:text-base">{post.descripcion}</p>
-                )}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+                        {post.nombreMascota || 'Sin nombre'}
+                      </h3>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">ID: {post.id}</span>
+                    </div>
+                    
+                    {post.descripcion && (
+                      <p className="text-gray-600 text-sm md:text-base">{post.descripcion}</p>
+                    )}
 
-                <div className="space-y-1 text-sm md:text-base text-gray-700">
-                  {post.zona && <p><strong>Zona:</strong> {post.zona}</p>}
-                  {post.fechaEvento && (
-                    <p><strong>Fecha del evento:</strong> {formatearFecha(post.fechaEvento)}</p>
-                  )}
-                  {post.fechaCreacion && (
-                    <p><strong>Fecha de creación:</strong> {formatearFecha(post.fechaCreacion)}</p>
-                  )}
-                  {post.montoRecompensa && (
-                    <p><strong>Recompensa:</strong> {formatearMonto(post.montoRecompensa)}</p>
-                  )}
-                  {post.tipoPublicacion && (
-                    <p><strong>Tipo:</strong> {post.tipoPublicacion}</p>
-                  )}
+                    <div className="space-y-1 text-sm md:text-base text-gray-700">
+                      {post.zona && <p><strong>Zona:</strong> {post.zona}</p>}
+                      {post.fechaEvento && (
+                        <p><strong>Fecha del evento:</strong> {formatearFecha(post.fechaEvento)}</p>
+                      )}
+                      {post.fechaCreacion && (
+                        <p><strong>Fecha de creación:</strong> {formatearFecha(post.fechaCreacion)}</p>
+                      )}
+                      {post.montoRecompensa && (
+                        <p><strong>Recompensa:</strong> {formatearMonto(post.montoRecompensa)}</p>
+                      )}
+                      {post.tipoPublicacion && (
+                        <p><strong>Tipo:</strong> {post.tipoPublicacion}</p>
+                      )}
+                    </div>
+
+                    {post.nombreContacto && (
+                      <div className="p-3 bg-gray-50 rounded-lg text-sm md:text-base">
+                        <p><strong>Contacto:</strong> {post.nombreContacto}</p>
+                        {post.telefono && <p><strong>Teléfono:</strong> {post.telefono}</p>}
+                        {post.email && <p><strong>Email:</strong> {post.email}</p>}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                      <button
+                        onClick={() => handleAprobar(post.id)}
+                        disabled={loading}
+                        className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
+                      >
+                        ✓ Aprobar
+                      </button>
+                      <button
+                        onClick={() => abrirModalConfirmacion('rechazar', post.id, post.nombreMascota)}
+                        disabled={loading}
+                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
+                      >
+                        ✗ Rechazar
+                      </button>
+                      <button
+                        onClick={() => abrirModalConfirmacion('eliminar', post.id, post.nombreMascota)}
+                        disabled={loading}
+                        className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
+                      >
+                        🗑️ Eliminar
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
 
-                {post.nombreContacto && (
-                  <div className="p-3 bg-gray-50 rounded-lg text-sm md:text-base">
-                    <p><strong>Contacto:</strong> {post.nombreContacto}</p>
-                    {post.telefono && <p><strong>Teléfono:</strong> {post.telefono}</p>}
-                    {post.email && <p><strong>Email:</strong> {post.email}</p>}
+      {/* Vista de Posts Publicados */}
+      {vistaActiva === 'publicados' && (
+        <>
+          {loading && postsPublicados.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">Cargando posts publicados...</div>
+          ) : postsPublicados.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">
+              <p>No hay posts publicados.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {postsPublicados.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-xl shadow-md p-4 md:p-6 flex flex-col md:flex-row gap-4"
+                >
+                  <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
+                    {post.imagenUrl ? (
+                      <img
+                        src={`http://localhost:8080${post.imagenUrl}`}
+                        alt={post.nombreMascota || 'Mascota'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        Sin imagen
+                      </div>
+                    )}
                   </div>
-                )}
 
-                <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                  <button
-                    onClick={() => handleAprobar(post.id)}
-                    disabled={loading}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
-                  >
-                    ✓ Aprobar
-                  </button>
-                  <button
-                    onClick={() => handleRechazar(post.id)}
-                    disabled={loading}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
-                  >
-                    ✗ Rechazar
-                  </button>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+                        {post.nombreMascota || 'Sin nombre'}
+                      </h3>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">ID: {post.id}</span>
+                    </div>
+                    
+                    {post.descripcion && (
+                      <p className="text-gray-600 text-sm md:text-base">{post.descripcion}</p>
+                    )}
+
+                    <div className="space-y-1 text-sm md:text-base text-gray-700">
+                      {post.zona && <p><strong>Zona:</strong> {post.zona}</p>}
+                      {post.fechaEvento && (
+                        <p><strong>Fecha del evento:</strong> {formatearFecha(post.fechaEvento)}</p>
+                      )}
+                      {post.fechaCreacion && (
+                        <p><strong>Fecha de creación:</strong> {formatearFecha(post.fechaCreacion)}</p>
+                      )}
+                      {post.montoRecompensa && (
+                        <p><strong>Recompensa:</strong> {formatearMonto(post.montoRecompensa)}</p>
+                      )}
+                      {post.tipoPublicacion && (
+                        <p><strong>Tipo:</strong> {post.tipoPublicacion}</p>
+                      )}
+                    </div>
+
+                    {post.nombreContacto && (
+                      <div className="p-3 bg-gray-50 rounded-lg text-sm md:text-base">
+                        <p><strong>Contacto:</strong> {post.nombreContacto}</p>
+                        {post.telefono && <p><strong>Teléfono:</strong> {post.telefono}</p>}
+                        {post.email && <p><strong>Email:</strong> {post.email}</p>}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                      <button
+                        onClick={() => abrirModalConfirmacion('eliminar', post.id, post.nombreMascota)}
+                        disabled={loading}
+                        className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
+                      >
+                        🗑️ Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Modal de Confirmación */}
+      {modalConfirmacion.mostrar && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={cerrarModalConfirmacion}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header del Modal */}
+            <div className={`p-6 ${
+              modalConfirmacion.tipo === 'eliminar' 
+                ? 'bg-gradient-to-r from-orange-500 to-red-500' 
+                : 'bg-gradient-to-r from-red-500 to-pink-500'
+            } text-white`}>
+              <div className="flex items-center gap-3">
+                <div className="text-4xl">
+                  {modalConfirmacion.tipo === 'eliminar' ? '🗑️' : '⚠️'}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">
+                    {modalConfirmacion.tipo === 'eliminar' ? 'Eliminar Post' : 'Rechazar Post'}
+                  </h3>
+                  <p className="text-sm opacity-90 mt-1">
+                    {modalConfirmacion.tipo === 'eliminar' 
+                      ? 'Esta acción no se puede deshacer' 
+                      : 'El post será marcado como rechazado'}
+                  </p>
                 </div>
               </div>
             </div>
-          ))}
+
+            {/* Contenido del Modal */}
+            <div className="p-6">
+              <p className="text-gray-700 text-base mb-4">
+                ¿Estás seguro de que deseas{' '}
+                <strong className="text-gray-900">
+                  {modalConfirmacion.tipo === 'eliminar' ? 'eliminar' : 'rechazar'}
+                </strong>{' '}
+                el post de <strong className="text-indigo-600">{modalConfirmacion.nombreMascota}</strong>?
+              </p>
+              
+              {modalConfirmacion.tipo === 'eliminar' && (
+                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-4 rounded">
+                  <p className="text-sm text-orange-800">
+                    <strong>⚠️ Advertencia:</strong> Esta acción eliminará permanentemente el post y su imagen. No podrás recuperar esta información.
+                  </p>
+                </div>
+              )}
+
+              {/* Botones de Acción */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={cerrarModalConfirmacion}
+                  className="flex-1 px-4 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmarAccion}
+                  disabled={loading}
+                  className={`flex-1 px-4 py-2.5 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base ${
+                    modalConfirmacion.tipo === 'eliminar'
+                      ? 'bg-orange-600 hover:bg-orange-700'
+                      : 'bg-red-600 hover:bg-red-700'
+                  }`}
+                >
+                  {loading ? 'Procesando...' : (modalConfirmacion.tipo === 'eliminar' ? 'Sí, Eliminar' : 'Sí, Rechazar')}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

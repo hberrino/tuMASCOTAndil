@@ -109,4 +109,10 @@ public class PostMascotaController {
         PostMascota post = service.marcarEncontrado(id);
         return ResponseEntity.ok(PostMascotaMapper.toResponse(post));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

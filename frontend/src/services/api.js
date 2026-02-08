@@ -208,4 +208,59 @@ export const rechazarPost = async (id, username, password) => {
   }
 };
 
+// Eliminar un post (requiere autenticación)
+export const eliminarPost = async (id, username, password) => {
+  try {
+    if (!username || !password) {
+      throw new Error('Credenciales no proporcionadas');
+    }
+    
+    // Crear el header de autenticación HTTP Basic manualmente
+    const credentials = btoa(`${username}:${password}`);
+    const url = `${API_BASE_URL}/posts/${id}`;
+    
+    console.log('Intentando eliminar post:', { id, url, username });
+    
+    const response = await axios.delete(
+      url,
+      {
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false,
+        validateStatus: function (status) {
+          return status < 500; // No lanzar error para códigos 4xx
+        },
+      }
+    );
+    
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
+    }
+  } catch (error) {
+    console.error('Error al eliminar post:', error);
+    if (error.response) {
+      // El servidor respondió con un código de error
+      console.error('Respuesta del servidor:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+    } else if (error.request) {
+      // La petición se hizo pero no hubo respuesta
+      console.error('No hubo respuesta del servidor:', error.request);
+      throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+    } else {
+      // Algo más causó el error
+      console.error('Error al configurar la petición:', error.message);
+      throw error;
+    }
+  }
+};
+
 export default api;

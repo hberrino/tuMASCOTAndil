@@ -92,6 +92,29 @@ public class PostMascotaService {
         return post;
     }
 
+    public void eliminar(Long id) {
+        PostMascota post = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Post no encontrado con id: " + id));
+        
+        // Soft delete: marcar como inactivo
+        post.setActivo(false);
+        repository.save(post);
+        
+        // Opcional: eliminar la imagen del servidor
+        if (post.getImagenUrl() != null && !post.getImagenUrl().isEmpty()) {
+            try {
+                String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
+                Path rutaArchivo = Paths.get("uploads", rutaImagen);
+                if (Files.exists(rutaArchivo)) {
+                    Files.delete(rutaArchivo);
+                }
+            } catch (IOException e) {
+                // Log el error pero no fallar la eliminación
+                System.err.println("Error al eliminar imagen: " + e.getMessage());
+            }
+        }
+    }
+
     private String guardarImagenLocal(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("La imagen es obligatoria");

@@ -103,9 +103,9 @@ const Perdidos = () => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-2 group"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-2 group flex flex-col h-full"
             >
-              <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative">
+              <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative flex-shrink-0">
                 {post.imagenUrl ? (
                   <img
                     src={`http://localhost:8080${post.imagenUrl}`}
@@ -121,16 +121,27 @@ const Perdidos = () => {
                   </div>
                 )}
               </div>
-              <div className="p-5 md:p-6">
+              <div className="p-5 md:p-6 flex flex-col flex-1">
+                {/* Título - siempre presente */}
                 <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 group-hover:text-indigo-600 transition-colors">
                   {post.nombreMascota || 'Sin nombre'}
                 </h3>
-                {post.descripcion && (
-                  <p className="text-gray-600 text-sm md:text-base mb-4 line-clamp-3 leading-relaxed">
-                    {post.descripcion}
-                  </p>
-                )}
-                <div className="space-y-2 mb-4">
+                
+                {/* Descripción - siempre ocupa el mismo espacio */}
+                <div className="mb-4 min-h-[4.5rem]">
+                  {post.descripcion ? (
+                    <p className="text-gray-600 text-sm md:text-base line-clamp-3 leading-relaxed">
+                      {post.descripcion}
+                    </p>
+                  ) : (
+                    <p className="text-gray-400 text-sm md:text-base line-clamp-3 leading-relaxed opacity-0">
+                      &nbsp;
+                    </p>
+                  )}
+                </div>
+                
+                {/* Zona y Fecha - siempre ocupa el mismo espacio */}
+                <div className="space-y-2 mb-4 min-h-[3.5rem]">
                   {post.zona && (
                     <p className="text-sm text-gray-700 flex items-center gap-2">
                       <span className="text-indigo-600">📍</span>
@@ -144,16 +155,22 @@ const Perdidos = () => {
                     </p>
                   )}
                 </div>
-                {post.montoRecompensa && (
-                  <div className="mt-2 mb-3">
+                
+                {/* Recompensa - siempre ocupa el mismo espacio */}
+                <div className="mb-3 min-h-[1.5rem]">
+                  {post.montoRecompensa ? (
                     <span className="text-xs text-gray-500">
                       Recompensa: {formatearMonto(post.montoRecompensa)}
                     </span>
-                  </div>
-                )}
+                  ) : (
+                    <span className="text-xs text-gray-500 opacity-0">
+                      &nbsp;
+                    </span>
+                  )}
+                </div>
                 
-                {/* Botón de Contacto */}
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                {/* Botón de Contacto - siempre en la parte inferior */}
+                <div className="mt-auto pt-4 border-t border-gray-100">
                   <button
                     onClick={() => abrirDetalles(post)}
                     className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-sm md:text-base shadow-md hover:shadow-lg flex items-center justify-center gap-2"

@@ -2,6 +2,7 @@ package com.buscatumascotandil.find.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -71,14 +72,17 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos (sin login requerido)
-                        .requestMatchers("/posts").permitAll() // POST /posts (crear) y GET /posts (listar publicados)
-                        .requestMatchers("/posts/{id}").permitAll() // GET /posts/{id} (ver detalles)
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll() // GET /posts (listar publicados)
+                        .requestMatchers(HttpMethod.POST, "/posts").permitAll() // POST /posts (crear)
+                        .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll() // GET /posts/{id} (ver detalles)
                         .requestMatchers("/uploads/**").permitAll() // Imágenes
                         .requestMatchers("/h2-console/**").permitAll() // H2 Console
                         // Endpoints de admin (requieren autenticación como ADMIN)
                         .requestMatchers("/posts/pendientes").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/aprobar").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/rechazar").hasRole("ADMIN")
+                        .requestMatchers("/posts/{id}/encontrado").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN") // DELETE /posts/{id} requiere admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().denyAll() // Todo lo demás denegado
                 )
