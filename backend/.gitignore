@@ -38,9 +38,9 @@ application-prod.properties
 .env.*.local
 
 ### CREDENCIALES Y ARCHIVOS SENSIBLES ###
-# IMPORTANTE: application.properties contiene credenciales de BD
-# Usa application.properties.example como plantilla
-src/main/resources/application.properties
+# IMPORTANTE: application.properties NO contiene credenciales hardcodeadas
+# Solo usa variables de entorno, por lo que es seguro subirlo al repo
+# src/main/resources/application.properties - REMOVIDO: es seguro subirlo (solo variables de entorno)
 src/main/resources/application-prod.properties
 src/main/resources/application-*.properties
 !src/main/resources/application.properties.example

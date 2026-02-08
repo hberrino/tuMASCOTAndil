@@ -2,7 +2,9 @@
 # CREDENCIALES Y ARCHIVOS SENSIBLES
 # ============================================
 # Archivos de configuración con credenciales
-**/application.properties
+# NOTA: application.properties NO tiene credenciales hardcodeadas, solo variables de entorno
+# Por lo tanto, es seguro subirlo al repo
+# **/application.properties - REMOVIDO: es seguro (solo variables de entorno)
 **/application-prod.properties
 **/application-*.properties
 !**/application.properties.example
