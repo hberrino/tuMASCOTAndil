@@ -1,0 +1,174 @@
+# ============================================
+# CREDENCIALES Y ARCHIVOS SENSIBLES
+# ============================================
+# Archivos de configuración con credenciales
+**/application.properties
+**/application-prod.properties
+**/application-*.properties
+!**/application.properties.example
+!**/application-prod.properties.example
+*.properties.local
+*.env
+*.env.local
+*.env.*.local
+.env.production
+.env.development
+.env.test
+
+# Docker compose con credenciales
+docker-compose.override.yml
+docker-compose.local.yml
+**/docker-compose.override.yml
+
+# Archivos de secretos
+secrets/
+*.pem
+*.key
+*.cert
+*.p12
+*.jks
+*.keystore
+*.truststore
+
+# ============================================
+# ARCHIVOS DE USUARIO Y UPLOADS
+# ============================================
+**/uploads/
+**/upload/
+**/files/
+**/images/
+**/media/
+**/static/uploads/
+
+# ============================================
+# NODE MODULES Y DEPENDENCIAS
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnp
+.pnp.js
+
+# ============================================
+# ARCHIVOS COMPILADOS Y BUILD
+# ============================================
+# Java/Maven
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+# Frontend builds
+dist/
+dist-ssr/
+build/
+*.local
+
+# ============================================
+# LOGS Y ARCHIVOS TEMPORALES
+# ============================================
+*.log
+logs/
+*.log.*
+*.out
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ============================================
+# IDEs Y EDITORES
+# ============================================
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.sts4-cache/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# BASE DE DATOS
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+*.sql
+!schema.sql
+!migrations/*.sql
+
+# ============================================
+# CACHÉ Y ARCHIVOS DEL SISTEMA
+# ============================================
+.cache/
+.parcel-cache/
+.npm/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# ============================================
+# ARCHIVOS DE BACKUP
+# ============================================
+*.bak
+*.backup
+*.old
+*.orig
+
+# ============================================
+# ARCHIVOS DE CONFIGURACIÓN LOCAL
+# ============================================
+config.local.*
+settings.local.*
+*.local.js
+*.local.ts
+local.properties
+
+# ============================================
+# ARCHIVOS DE SISTEMA OPERATIVO
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# ARCHIVOS DE TEST Y COBERTURA
+# ============================================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# ============================================
+# VARIABLES DE ENTORNO Y SECRETOS
+# ============================================
+.envrc
+.flaskenv
+.venv/
+venv/
+ENV/
+env.bak
+venv.bak/

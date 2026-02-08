@@ -1,0 +1,12 @@
+/* Footer styles - Fallback si Tailwind no carga */
+.footer-container {
+  background: linear-gradient(to bottom right, #111827, #312e81, #6b21a8);
+  color: white;
+  padding: 3rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .footer-container {
+    padding: 4rem 2rem;
+  }
+}

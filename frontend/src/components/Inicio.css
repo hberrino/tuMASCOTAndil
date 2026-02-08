@@ -1,0 +1,26 @@
+/* Inicio styles - Fallback si Tailwind no carga */
+.inicio-container {
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .welcome-title {
+    font-size: 4.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .welcome-title {
+    font-size: 6rem;
+  }
+}

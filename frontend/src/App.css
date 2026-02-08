@@ -1,0 +1,10 @@
+/* Padding top para el navbar fijo */
+.main-content {
+  padding-top: 80px;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding-top: 90px;
+  }
+}
