@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080';
+// Usar variable de entorno para la URL del backend
+// En desarrollo: VITE_API_URL=http://localhost:8080
+// En producción (Vercel): VITE_API_URL=https://tu-backend-en-render.onrender.com
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
