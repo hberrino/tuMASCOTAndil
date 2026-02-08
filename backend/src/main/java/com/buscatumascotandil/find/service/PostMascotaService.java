@@ -5,6 +5,8 @@ import com.buscatumascotandil.find.exception.NotFoundException;
 import com.buscatumascotandil.find.model.*;
 import com.buscatumascotandil.find.repository.PostMascotaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +19,12 @@ import java.util.List;
 public class PostMascotaService {
 
     private final PostMascotaRepository repository;
+    
+    @Autowired(required = false)
+    private CloudinaryService cloudinaryService;
+    
+    @Value("${cloudinary.enabled:false}")
+    private boolean cloudinaryEnabled;
 
     public PostMascota crearDesdeRequest(
             CrearPostMascotaRequest request,
@@ -43,7 +51,10 @@ public class PostMascotaService {
         post.setEstado(EstadoPublicacion.PENDIENTE);
         post.setIpPublicacion(ip);
 
-        String imageUrl = guardarImagenLocal(imagen);
+        // Usar Cloudinary si está habilitado y disponible, sino guardar localmente
+        String imageUrl = (cloudinaryEnabled && cloudinaryService != null)
+                ? cloudinaryService.uploadImage(imagen)
+                : guardarImagenLocal(imagen);
         post.setImagenUrl(imageUrl);
 
         return repository.save(post);
@@ -100,17 +111,23 @@ public class PostMascotaService {
         post.setActivo(false);
         repository.save(post);
         
-        // Opcional: eliminar la imagen del servidor
+        // Eliminar la imagen: Cloudinary o local
         if (post.getImagenUrl() != null && !post.getImagenUrl().isEmpty()) {
-            try {
-                String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
-                Path rutaArchivo = Paths.get("uploads", rutaImagen);
-                if (Files.exists(rutaArchivo)) {
-                    Files.delete(rutaArchivo);
+            if (cloudinaryEnabled && cloudinaryService != null && post.getImagenUrl().startsWith("http")) {
+                // Eliminar de Cloudinary
+                cloudinaryService.deleteImage(post.getImagenUrl());
+            } else {
+                // Eliminar archivo local
+                try {
+                    String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
+                    Path rutaArchivo = Paths.get("uploads", rutaImagen);
+                    if (Files.exists(rutaArchivo)) {
+                        Files.delete(rutaArchivo);
+                    }
+                } catch (IOException e) {
+                    // Log el error pero no fallar la eliminación
+                    System.err.println("Error al eliminar imagen: " + e.getMessage());
                 }
-            } catch (IOException e) {
-                // Log el error pero no fallar la eliminación
-                System.err.println("Error al eliminar imagen: " + e.getMessage());
             }
         }
     }
