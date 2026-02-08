@@ -9,8 +9,12 @@ app.admin.username=admin
 app.admin.password=TU_PASSWORD_SEGURO_AQUI
 app.admin.create-on-startup=true
 
-# Base de datos (ejemplo con MySQL)
-# spring.datasource.url=jdbc:mysql://localhost:3306/tumascotandil
-# spring.datasource.username=tu_usuario_db
-# spring.datasource.password=tu_password_db
-# spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+# Base de datos PostgreSQL (Supabase)
+# Usar variables de entorno en producción (Render, etc.)
+# DB_URL=jdbc:postgresql://db.hqblwtmxrlnqbigjtmta.supabase.co:5432/postgres
+# DB_USERNAME=postgres
+# DB_PASSWORD=tu_password_aqui
+# DB_DDL_AUTO=update
+# DB_SHOW_SQL=true
+# DB_FORMAT_SQL=true
+# spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect

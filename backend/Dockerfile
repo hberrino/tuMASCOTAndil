@@ -22,11 +22,9 @@ RUN mkdir -p /app/uploads
 # Exponer el puerto 8080
 EXPOSE 8080
 
-# Variables de entorno por defecto
+# Variables de entorno deben configurarse en docker-compose o en Render
+# NO hardcodeamos credenciales aquí por seguridad
 ENV SPRING_PROFILES_ACTIVE=prod
-ENV DB_URL=jdbc:mysql://mysql:3306/tumascotandil?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-ENV DB_USERNAME=root
-ENV DB_PASSWORD=Hernan007.
 
 # Ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
