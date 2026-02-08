@@ -31,14 +31,18 @@ En la sección **"Environment"** de tu servicio, agrega las siguientes variables
 #### 🔐 Variables de Base de Datos (Supabase)
 
 ```bash
-DB_URL=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require
-DB_USERNAME=postgres.hqblwtmxrlnqbigjtmta
-DB_PASSWORD=Hberrinorpv1998.
+DB_URL=jdbc:postgresql://TU_HOST_SUPABASE:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=TU_PASSWORD_SUPABASE
 ```
 
-**Nota**: Si prefieres conexión directa (sin pooler), usa:
+**Nota**: 
+- Reemplaza `TU_HOST_SUPABASE` con tu host de Supabase (ej: `db.xxxxx.supabase.co`)
+- Reemplaza `TU_PASSWORD_SUPABASE` con tu contraseña de Supabase
+- Si prefieres usar pooler (recomendado para producción con muchas conexiones), usa:
 ```bash
-DB_URL=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:5432/postgres?sslmode=require
+DB_URL=jdbc:postgresql://TU_HOST_POOLER_SUPABASE:6543/postgres?sslmode=require
+DB_USERNAME=postgres.TU_PROJECT_REF_SUPABASE
 ```
 
 #### ⚙️ Variables de Configuración JPA/Hibernate
@@ -105,9 +109,9 @@ Copia y pega estas variables en Render (reemplaza los valores según corresponda
 
 ```bash
 SPRING_PROFILES_ACTIVE=prod
-DB_URL=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require
-DB_USERNAME=postgres.hqblwtmxrlnqbigjtmta
-DB_PASSWORD=Hberrinorpv1998.
+DB_URL=jdbc:postgresql://TU_HOST_SUPABASE:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=TU_PASSWORD_SUPABASE
 DB_DDL_AUTO=update
 DB_SHOW_SQL=false
 DB_FORMAT_SQL=false

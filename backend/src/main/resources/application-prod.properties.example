@@ -11,9 +11,9 @@ app.admin.create-on-startup=true
 
 # Base de datos PostgreSQL (Supabase)
 # Usar variables de entorno en producción (Render, etc.)
-# DB_URL=jdbc:postgresql://db.hqblwtmxrlnqbigjtmta.supabase.co:5432/postgres
+# DB_URL=jdbc:postgresql://TU_HOST_SUPABASE:5432/postgres?sslmode=require
 # DB_USERNAME=postgres
-# DB_PASSWORD=tu_password_aqui
+# DB_PASSWORD=TU_PASSWORD_SUPABASE
 # DB_DDL_AUTO=update
 # DB_SHOW_SQL=true
 # DB_FORMAT_SQL=true

@@ -13,8 +13,9 @@ services:
     
       # Variables de entorno para PostgreSQL (Supabase)
       # Configurar estas variables en Render o en tu entorno de producción
-      DB_URL: ${DB_URL:-jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require}
-      DB_USERNAME: ${DB_USERNAME:-postgres.hqblwtmxrlnqbigjtmta}
+      # IMPORTANTE: No hardcodear credenciales aquí. Usar variables de entorno.
+      DB_URL: ${DB_URL:-}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-}
       DB_DDL_AUTO: ${DB_DDL_AUTO:-update}
       DB_SHOW_SQL: ${DB_SHOW_SQL:-false}
