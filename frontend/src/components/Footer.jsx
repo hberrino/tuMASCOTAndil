@@ -23,7 +23,7 @@ const Footer = ({ onNavigate }) => {
               "Proyecto comunitario para reunir mascotas con sus familias"
             </p>
             <p className="text-gray-400 text-xs sm:text-sm">
-              © 2026
+              © Derechos reservados 2026
             </p>
           </div>
 
@@ -32,22 +32,22 @@ const Footer = ({ onNavigate }) => {
             <div className="mb-4">
               <h3 className="text-lg font-bold">Navegación rápida</h3>
             </div>
-            <nav className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-2 items-center md:items-start">
               <button
                 onClick={() => handleNavClick('inicio')}
-                className="text-gray-300 hover:text-white transition-colors duration-200 text-left md:text-left text-sm sm:text-base hover:underline"
+                className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
               >
                 Inicio
               </button>
               <button
                 onClick={() => handleNavClick('perdidos')}
-                className="text-gray-300 hover:text-white transition-colors duration-200 text-left md:text-left text-sm sm:text-base hover:underline"
+                className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
               >
                 Perdidos
               </button>
               <button
                 onClick={() => handleNavClick('buscaTuMascota')}
-                className="text-gray-300 hover:text-white transition-colors duration-200 text-left md:text-left text-sm sm:text-base hover:underline"
+                className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
               >
                 Buscar tu mascota
               </button>

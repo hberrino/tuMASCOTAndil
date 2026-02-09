@@ -10,6 +10,23 @@ const API_BASE_URL = rawUrl.replace(/\/+$/, ''); // Eliminar todas las barras fi
 // Exportar la URL base para usar en otros componentes (ej: para imágenes)
 export const getApiBaseUrl = () => API_BASE_URL;
 
+// Función helper para construir la URL de imagen correcta
+// Si la URL ya es completa (Cloudinary), la usa directamente
+// Si es relativa (imagen local), la concatena con la URL base del backend
+export const getImageUrl = (imagenUrl) => {
+  if (!imagenUrl) return null;
+  
+  // Si la URL ya es completa (empieza con http:// o https://), usarla directamente
+  if (imagenUrl.startsWith('http://') || imagenUrl.startsWith('https://')) {
+    return imagenUrl;
+  }
+  
+  // Si es una ruta relativa, concatenar con la URL base del backend
+  // Asegurar que la ruta relativa empiece con /
+  const path = imagenUrl.startsWith('/') ? imagenUrl : `/${imagenUrl}`;
+  return `${API_BASE_URL}${path}`;
+};
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {

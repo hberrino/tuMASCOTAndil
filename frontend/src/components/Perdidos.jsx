@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPublicados, getApiBaseUrl } from '../services/api';
+import { getPostsPublicados, getImageUrl } from '../services/api';
 import './Perdidos.css';
 
 const Perdidos = () => {
@@ -86,11 +86,13 @@ const Perdidos = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 flex items-center justify-center gap-3">
-          <img src="/icons/pet1icon.png" alt="Mascota" className="w-10 h-10 md:w-12 md:h-12" />
-          <span>Mascotas Perdidas</span>
+      <div className="text-center mb-8 sm:mb-10 md:mb-12">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 sm:mb-4">
+          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Mascotas Perdidas
+          </span>
         </h2>
+        <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-4"></div>
         <p className="text-gray-600 text-lg">Ayuda a encontrar a estas mascotas</p>
       </div>
       {posts.length === 0 ? (
@@ -108,11 +110,14 @@ const Perdidos = () => {
               <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative flex-shrink-0">
                 {post.imagenUrl ? (
                   <img
-                    src={`${getApiBaseUrl()}${post.imagenUrl}`}
+                    src={getImageUrl(post.imagenUrl)}
                     alt={post.nombreMascota || 'Mascota'}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                      // Usar data URI SVG para evitar bucle infinito si el fallback también falla
+                      if (!e.target.src.startsWith('data:')) {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
+                      }
                     }}
                   />
                 ) : (
