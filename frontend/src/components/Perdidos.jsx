@@ -8,6 +8,7 @@ const Perdidos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [postSeleccionado, setPostSeleccionado] = useState(null);
+  const [imagenExpandida, setImagenExpandida] = useState(null);
   const [postsMostrados, setPostsMostrados] = useState(9); // Mostrar 9 inicialmente (3x3)
 
   useEffect(() => {
@@ -65,6 +66,16 @@ const Perdidos = () => {
     setPostSeleccionado(null);
   };
 
+  const abrirImagen = (post) => {
+    if (post.imagenUrl) {
+      setImagenExpandida(getImageUrl(post.imagenUrl));
+    }
+  };
+
+  const cerrarImagen = () => {
+    setImagenExpandida(null);
+  };
+
   if (loading) {
     return (
       <div className="w-full max-w-7xl mx-auto px-4 py-8">
@@ -112,17 +123,30 @@ const Perdidos = () => {
             >
               <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative flex-shrink-0">
                 {post.imagenUrl ? (
-                  <img
-                    src={getImageUrl(post.imagenUrl)}
-                    alt={post.nombreMascota || 'Mascota'}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => {
-                      // Usar data URI SVG para evitar bucle infinito si el fallback también falla
-                      if (!e.target.src.startsWith('data:')) {
-                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
-                      }
-                    }}
-                  />
+                  <div 
+                    className="w-full h-full cursor-pointer relative group/image"
+                    onClick={() => abrirImagen(post)}
+                  >
+                    <img
+                      src={getImageUrl(post.imagenUrl)}
+                      alt={post.nombreMascota || 'Mascota'}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        // Usar data URI SVG para evitar bucle infinito si el fallback también falla
+                        if (!e.target.src.startsWith('data:')) {
+                          e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
+                        }
+                      }}
+                    />
+                    {/* Overlay con icono de expandir */}
+                    <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover/image:opacity-100">
+                      <div className="bg-white/90 rounded-full p-3 transform scale-0 group-hover/image:scale-100 transition-transform duration-300">
+                        <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <span className="text-4xl">🐾</span>
@@ -322,6 +346,34 @@ const Perdidos = () => {
                 )}
               </div>
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal de Imagen Expandida */}
+      {imagenExpandida && createPortal(
+        <div 
+          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={cerrarImagen}
+        >
+          <div className="relative max-w-7xl max-h-[95vh] w-full h-full flex items-center justify-center">
+            {/* Botón cerrar */}
+            <button
+              onClick={cerrarImagen}
+              className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 text-4xl font-light w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors bg-black/50"
+              aria-label="Cerrar imagen"
+            >
+              ×
+            </button>
+            
+            {/* Imagen */}
+            <img
+              src={imagenExpandida}
+              alt="Imagen expandida"
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>,
         document.body
