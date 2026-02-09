@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import Admin from './Admin';
 import './Navbar.css';
 
 const Navbar = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
 
   const handleClick = (e, sectionId) => {
     e.preventDefault();
@@ -14,12 +12,6 @@ const Navbar = ({ onNavigate }) => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleAdminClick = (e) => {
-    e.preventDefault();
-    setShowAdmin(!showAdmin);
-    setIsMenuOpen(false); // Cerrar el menú móvil si está abierto
   };
 
   return (
@@ -63,15 +55,6 @@ const Navbar = ({ onNavigate }) => {
               >
                 Busca tu Mascota
               </a>
-            </li>
-            <li>
-              <button
-                onClick={handleAdminClick}
-                className="text-lg text-gray-700 hover:text-indigo-600 transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-indigo-50"
-                aria-label="Panel de administración"
-              >
-                🔐
-              </button>
             </li>
           </ul>
 
@@ -135,27 +118,9 @@ const Navbar = ({ onNavigate }) => {
                 <span>Busca tu Mascota</span>
               </a>
             </li>
-            <li>
-              <button
-                onClick={handleAdminClick}
-                className="block w-full text-left text-base text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 font-medium px-6 py-4"
-                aria-label="Panel de administración"
-              >
-                🔐
-              </button>
-            </li>
           </ul>
         </div>
       </nav>
-
-      {/* Modal Admin - Fuera del nav para evitar problemas de posicionamiento */}
-      {showAdmin && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-gray-200">
-            <Admin onClose={() => setShowAdmin(false)} />
-          </div>
-        </div>
-      )}
     </>
   );
 };
