@@ -32,7 +32,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 segundos de timeout
+  timeout: 100000, // 100 segundos de timeout
 });
 
 // Función para verificar si el backend está disponible

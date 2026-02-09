@@ -1,14 +1,24 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import Admin from './Admin';
 import './Footer.css';
 
 const Footer = ({ onNavigate }) => {
+  const [showAdmin, setShowAdmin] = useState(false);
+
   const handleNavClick = (sectionId) => {
     if (onNavigate) {
       onNavigate(sectionId);
     }
   };
 
+  const handleAdminClick = (e) => {
+    e.preventDefault();
+    setShowAdmin(!showAdmin);
+  };
+
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 text-white mt-20">
+    <footer className="bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 text-white mt-20 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
           {/* Sección Proyecto */}
@@ -59,12 +69,22 @@ const Footer = ({ onNavigate }) => {
             <div className="mb-4">
               <h3 className="text-lg font-bold">Desarrollo</h3>
             </div>
-            <p className="text-gray-300 mb-4 text-sm sm:text-base">
-              Hernán Berrino
-            </p>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+              <p className="text-gray-300 text-sm sm:text-base">
+                Hernán Berrino
+              </p>
+              <button
+                onClick={handleAdminClick}
+                className="w-6 h-6 bg-gray-800/60 hover:bg-gray-700/80 text-white rounded-full flex items-center justify-center text-[10px] transition-all duration-200 hover:scale-110 shadow-md border border-gray-600/40"
+                aria-label="Panel de administración"
+                title="Panel de administración"
+              >
+                🔐
+              </button>
+            </div>
             <div className="flex items-center justify-center md:justify-start gap-4">
               <a
-                href="https://www.linkedin.com/in/hernan-berrino/"
+                href="https://www.linkedin.com/in/hernanberrino/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:scale-110 transition-transform duration-200"
@@ -77,7 +97,7 @@ const Footer = ({ onNavigate }) => {
                 />
               </a>
               <a
-                href="https://github.com/hernanberrino"
+                href="https://github.com/hberrino"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:scale-110 transition-transform duration-200"
@@ -102,6 +122,22 @@ const Footer = ({ onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* Modal Admin */}
+      {showAdmin && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowAdmin(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-gray-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Admin onClose={() => setShowAdmin(false)} />
+          </div>
+        </div>,
+        document.body
+      )}
     </footer>
   );
 };

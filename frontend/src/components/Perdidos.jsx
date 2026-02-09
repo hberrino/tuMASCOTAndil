@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getPostsPublicados, getImageUrl } from '../services/api';
 import './Perdidos.css';
 
@@ -215,13 +216,13 @@ const Perdidos = () => {
       )}
 
       {/* Modal de Detalles y Contacto */}
-      {postSeleccionado && (
+      {postSeleccionado && createPortal(
         <div 
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={cerrarDetalles}
         >
           <div 
-            className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden"
+            className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header del Modal */}
@@ -322,7 +323,8 @@ const Perdidos = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
