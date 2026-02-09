@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -63,12 +64,19 @@ public class SecurityConfig {
         
         // Configurar orígenes permitidos desde variable de entorno
         if (StringUtils.hasText(allowedOrigins)) {
-            // Si hay variable de entorno, usar esa + localhost para desarrollo
+            // Si hay variable de entorno, usar esa
             List<String> origins = Arrays.asList(allowedOrigins.split(","));
+            // Limpiar espacios en blanco
+            origins = origins.stream()
+                    .map(String::trim)
+                    .filter(StringUtils::hasText)
+                    .collect(Collectors.toList());
             configuration.setAllowedOrigins(origins);
+            System.out.println("CORS (SecurityConfig) configurado con orígenes permitidos: " + String.join(", ", origins));
         } else {
             // Por defecto: solo localhost (desarrollo)
             configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+            System.out.println("CORS (SecurityConfig) usando configuración por defecto (localhost) - Variable CORS_ALLOWED_ORIGINS no configurada");
         }
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

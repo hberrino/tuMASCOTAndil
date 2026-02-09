@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPublicados } from '../services/api';
+import { getPostsPublicados, getApiBaseUrl } from '../services/api';
 import './Perdidos.css';
 
 const Perdidos = () => {
@@ -108,7 +108,7 @@ const Perdidos = () => {
               <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative flex-shrink-0">
                 {post.imagenUrl ? (
                   <img
-                    src={`http://localhost:8080${post.imagenUrl}`}
+                    src={`${getApiBaseUrl()}${post.imagenUrl}`}
                     alt={post.nombreMascota || 'Mascota'}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {

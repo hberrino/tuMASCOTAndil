@@ -232,13 +232,16 @@ El panel de administración permite moderar el contenido antes de su publicació
 
 ### Configuración de Credenciales
 
-Para producción, configura las siguientes variables de entorno:
+Para producción, configura las siguientes variables de entorno en Render:
 
 ```bash
-export ADMIN_USERNAME=admin
-export ADMIN_PASSWORD=tu_password_seguro
-export ADMIN_CREATE_ON_STARTUP=true
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=tu_password_seguro
+ADMIN_CREATE_ON_STARTUP=true
+CORS_ALLOWED_ORIGINS=https://tumascotandil.vercel.app
 ```
+
+**Importante:** La variable `CORS_ALLOWED_ORIGINS` es esencial para que el frontend pueda comunicarse con el backend en producción.
 
 ## 🔧 Configuración
 
@@ -376,9 +379,26 @@ Verifica que:
 
 ### Error de CORS
 
-El backend está configurado para permitir `http://localhost:5173`. Si usas otro puerto, ajusta la configuración en `backend/src/main/java/com/buscatumascotandil/find/config/SecurityConfig.java`
+El backend está configurado para permitir `http://localhost:5173` por defecto. Para producción, debes configurar la variable de entorno `CORS_ALLOWED_ORIGINS` en Render.
+
+**Solución para producción (Render):**
+
+1. Ve a tu servicio en Render
+2. Navega a **Environment** (Variables de entorno)
+3. Agrega la siguiente variable:
+   - **Key:** `CORS_ALLOWED_ORIGINS`
+   - **Value:** `https://tumascotandil.vercel.app` (o tu dominio de frontend)
+   
+   Si necesitas permitir múltiples orígenes, sepáralos con comas:
+   ```
+   https://tumascotandil.vercel.app,https://www.tumascotandil.vercel.app
+   ```
+
+4. Reinicia el servicio en Render para que los cambios surtan efecto
 
 **Nota:** Los cambios de CORS requieren reiniciar el backend para que surtan efecto.
+
+**Error común:** Si ves `Access to XMLHttpRequest ... has been blocked by CORS policy`, significa que el dominio del frontend no está en la lista de orígenes permitidos. Asegúrate de que `CORS_ALLOWED_ORIGINS` incluya exactamente el dominio desde donde se hace la petición (incluyendo `https://`).
 
 ### Problemas con la base de datos
 

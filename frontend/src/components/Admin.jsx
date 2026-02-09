@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend } from '../services/api';
+import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl } from '../services/api';
 
 const Admin = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -34,7 +34,7 @@ const Admin = ({ onClose }) => {
       // Primero verificar que el backend esté disponible
       const backendStatus = await verificarBackend();
       if (!backendStatus.disponible) {
-        setError('El backend no está disponible. Verifica que esté corriendo en http://localhost:8080');
+        setError(`El backend no está disponible. Verifica que esté corriendo en ${getApiBaseUrl()}`);
         return;
       }
       
@@ -48,7 +48,7 @@ const Admin = ({ onClose }) => {
       if (err.response?.status === 401) {
         setError('Credenciales incorrectas. Verifica usuario y contraseña.');
       } else if (err.message?.includes('No se pudo conectar')) {
-        setError('No se pudo conectar con el backend. Verifica que esté corriendo en http://localhost:8080');
+        setError(`No se pudo conectar con el backend. Verifica que esté corriendo en ${getApiBaseUrl()}`);
       } else {
         setError(`Error al autenticar: ${err.message || 'Error desconocido'}`);
       }
@@ -312,7 +312,7 @@ const Admin = ({ onClose }) => {
     const verificar = async () => {
       const status = await verificarBackend();
       if (!status.disponible) {
-        setError(`⚠️ Backend no disponible. Verifica que esté corriendo en http://localhost:8080\n\nError: ${status.error || 'No se pudo conectar'}`);
+        setError(`⚠️ Backend no disponible. Verifica que esté corriendo en ${getApiBaseUrl()}\n\nError: ${status.error || 'No se pudo conectar'}`);
       }
     };
     verificar();
@@ -468,7 +468,7 @@ const Admin = ({ onClose }) => {
                   <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
                     {post.imagenUrl ? (
                       <img
-                        src={`http://localhost:8080${post.imagenUrl}`}
+                        src={`${getApiBaseUrl()}${post.imagenUrl}`}
                         alt={post.nombreMascota || 'Mascota'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -568,7 +568,7 @@ const Admin = ({ onClose }) => {
                   <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
                     {post.imagenUrl ? (
                       <img
-                        src={`http://localhost:8080${post.imagenUrl}`}
+                        src={`${getApiBaseUrl()}${post.imagenUrl}`}
                         alt={post.nombreMascota || 'Mascota'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
