@@ -156,18 +156,6 @@ const BuscaTuMascota = () => {
         </p>
       </div>
 
-      {mensaje.texto && (
-        <div
-          className={`mb-6 p-5 rounded-xl text-center shadow-md border-2 ${
-            mensaje.tipo === 'success'
-              ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300'
-              : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-300'
-          }`}
-        >
-          <p className="font-semibold">{mensaje.texto}</p>
-        </div>
-      )}
-
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 md:p-10 space-y-8"
@@ -682,6 +670,18 @@ const BuscaTuMascota = () => {
             </span>
           )}
         </button>
+
+        {mensaje.texto && (
+          <div
+            className={`mt-6 p-5 rounded-xl text-center shadow-md border-2 ${
+              mensaje.tipo === 'success'
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300'
+                : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-300'
+            }`}
+          >
+            <p className="font-semibold">{mensaje.texto}</p>
+          </div>
+        )}
       </form>
     </div>
   );
