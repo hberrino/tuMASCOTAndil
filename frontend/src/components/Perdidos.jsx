@@ -7,6 +7,7 @@ const Perdidos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [postSeleccionado, setPostSeleccionado] = useState(null);
+  const [postsMostrados, setPostsMostrados] = useState(9); // Mostrar 9 inicialmente (3x3)
 
   useEffect(() => {
     const cargarPosts = async () => {
@@ -101,8 +102,9 @@ const Perdidos = () => {
           <p className="text-gray-600 text-lg">No hay mascotas perdidas publicadas en este momento.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {posts.map((post) => (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {posts.slice(0, postsMostrados).map((post) => (
             <div
               key={post.id}
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-2 group flex flex-col h-full"
@@ -187,7 +189,29 @@ const Perdidos = () => {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+          
+          {/* Botón "Ver más" */}
+          {postsMostrados < posts.length && (
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => setPostsMostrados(prev => Math.min(prev + 9, posts.length))}
+                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Ver más mascotas ({posts.length - postsMostrados} restantes)
+              </button>
+            </div>
+          )}
+          
+          {/* Indicador cuando se muestran todos */}
+          {postsMostrados >= posts.length && posts.length > 9 && (
+            <div className="mt-8 text-center">
+              <p className="text-gray-500 text-sm">
+                Mostrando todos los {posts.length} posts
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal de Detalles y Contacto */}
