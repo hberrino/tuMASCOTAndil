@@ -27,9 +27,9 @@ Este proyecto fue creado para:
 - **Spring Security** - Autenticación y autorización
 - **Spring Data JPA** - Persistencia de datos
 - **Hibernate** - ORM (Object-Relational Mapping)
-- **MySQL 8.0** - Base de datos relacional
+- **PostgreSQL** - Base de datos relacional (Supabase)
 - **Maven** - Gestión de dependencias y construcción
-- **Docker & Docker Compose** - Contenedorización y orquestación
+- **Docker** - Contenedorización (Dockerfile)
 - **BCrypt** - Encriptación de contraseñas
 - **Lombok** - Reducción de código boilerplate
 
@@ -38,12 +38,14 @@ Este proyecto fue creado para:
 - **Vite 7.2.4** - Herramienta de construcción y desarrollo
 - **React Router DOM 7.13.0** - Enrutamiento de la aplicación
 - **Axios 1.13.4** - Cliente HTTP para comunicación con la API
+- **Tailwind CSS** - Framework de CSS utility-first
 - **ESLint** - Linter para mantener calidad de código
 
-### Infraestructura
-- **Docker** - Contenedorización de servicios
-- **Docker Compose** - Orquestación de contenedores
-- **MySQL** - Base de datos en contenedor
+### Servicios Externos
+- **Supabase** - Base de datos PostgreSQL en la nube
+- **Cloudinary** - Almacenamiento y gestión de imágenes
+- **Render** - Hosting del backend (Spring Boot)
+- **Vercel** - Hosting del frontend (React)
 
 ## 📁 Estructura del Proyecto
 
@@ -65,8 +67,6 @@ proyectotumascotandil/
 │   │   │   └── resources/
 │   │   │       └── application.properties
 │   │   └── test/                       # Tests unitarios
-│   ├── uploads/                        # Imágenes subidas (volumen Docker)
-│   ├── docker-compose.yml              # Configuración Docker Compose
 │   ├── Dockerfile                      # Imagen Docker del backend
 │   └── pom.xml                         # Configuración Maven
 │
@@ -85,101 +85,25 @@ proyectotumascotandil/
 │   ├── package.json            # Dependencias npm
 │   └── vite.config.js          # Configuración Vite
 │
-├── start-backend.ps1           # Script de inicio backend (Windows)
-├── start-backend.sh            # Script de inicio backend (Linux/Mac)
-├── start-frontend.ps1          # Script de inicio frontend (Windows)
-├── start-frontend.sh           # Script de inicio frontend (Linux/Mac)
 └── README.md                   # Este archivo
 ```
 
-## 🛠️ Instalación y Configuración
+## 🎨 Funcionalidades del Frontend
 
-### Prerrequisitos
+### Secciones Disponibles
 
-- **Docker** y **Docker Compose** instalados
-- **Node.js** (v18 o superior) y **npm** instalados
-- **Git** para clonar el repositorio
+1. **Inicio** (`/`) - Página de bienvenida con información sobre el proyecto
+2. **Perdidos** (`/perdidos`) - Galería de mascotas perdidas aprobadas y publicadas con paginación
+3. **Busca tu Mascota** (`/busca-tu-mascota`) - Formulario para reportar una mascota perdida
+4. **Admin** (`/admin`) - Panel de administración para moderar reportes
 
-### Pasos de Instalación
+### Características
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone <url-del-repositorio>
-   cd proyectotumascotandil
-   ```
-
-2. **Instalar dependencias del frontend:**
-   ```bash
-   cd frontend
-   npm install
-   cd ..
-   ```
-
-## ▶️ Ejecución del Proyecto
-
-### Opción 1: Usando Scripts (Recomendado)
-
-**Windows (PowerShell):**
-```powershell
-# Terminal 1 - Backend
-.\start-backend.ps1
-
-# Terminal 2 - Frontend
-.\start-frontend.ps1
-```
-
-**Linux/Mac:**
-```bash
-# Terminal 1 - Backend
-chmod +x start-backend.sh
-./start-backend.sh
-
-# Terminal 2 - Frontend
-chmod +x start-frontend.sh
-./start-frontend.sh
-```
-
-### Opción 2: Manual
-
-**1. Iniciar el Backend:**
-```bash
-cd backend
-docker-compose up -d --build
-```
-
-Esto iniciará:
-- MySQL en el puerto **3307**
-- Backend Spring Boot en el puerto **8080**
-
-**2. Iniciar el Frontend:**
-```bash
-cd frontend
-npm run dev
-```
-
-El frontend estará disponible en `http://localhost:5173`
-
-### Verificar que todo funcione
-
-```bash
-# Ver logs del backend
-cd backend
-docker-compose logs -f backend
-
-# Verificar que el backend responda
-curl http://localhost:8080/posts
-```
-
-## 🛑 Detener los Servicios
-
-**Backend:**
-```bash
-cd backend
-docker-compose down
-```
-
-**Frontend:**
-Presiona `Ctrl + C` en la terminal donde está corriendo.
+- **Diseño responsive** - Adaptable a dispositivos móviles y desktop
+- **Navegación intuitiva** - Menú de navegación entre secciones
+- **Carga de imágenes** - Los usuarios pueden subir fotos de las mascotas (Cloudinary)
+- **Paginación** - Sistema de "Ver más" para cargar posts adicionales
+- **Autenticación** - Sistema de login para administradores
 
 ## 📡 API y Endpoints
 
@@ -194,76 +118,50 @@ Presiona `Ctrl + C` en la terminal donde está corriendo.
 
 - `GET /posts/pendientes` - Listar todos los posts pendientes de aprobación
 - `PATCH /posts/{id}/aprobar` - Aprobar un post (cambia estado a PUBLICADO)
-- `PATCH /posts/{id}/rechazar` - Rechazar un post (cambia estado a RECHAZADO)
-
-## 🎨 Funcionalidades del Frontend
-
-### Secciones Disponibles
-
-1. **Inicio** (`/`) - Página de bienvenida con información sobre el proyecto
-2. **Perdidos** (`/perdidos`) - Galería de mascotas perdidas aprobadas y publicadas
-3. **Busca tu Mascota** (`/busca-tu-mascota`) - Formulario para reportar una mascota perdida
-4. **Admin** (`/admin`) - Panel de administración para moderar reportes
-
-### Características
-
-- **Diseño responsive** - Adaptable a dispositivos móviles y desktop
-- **Navegación intuitiva** - Menú de navegación entre secciones
-- **Carga de imágenes** - Los usuarios pueden subir fotos de las mascotas
-- **Búsqueda y filtrado** - Visualización de reportes con detalles completos
-- **Autenticación** - Sistema de login para administradores
+- `PATCH /posts/{id}/rechazar` - Rechazar un post (cambia estado a RECHAZADO y elimina imagen)
+- `DELETE /posts/{id}` - Eliminar un post (soft delete y elimina imagen)
 
 ## 🔐 Panel de Administración
 
 El panel de administración permite moderar el contenido antes de su publicación pública.
 
-### Acceso
-
-1. Navegar a la sección **Admin** en el menú
-2. Ingresar credenciales:
-   - **Usuario:** `admin` (por defecto)
-   - **Contraseña:** Se genera automáticamente en desarrollo (ver logs del backend)
-
 ### Funcionalidades del Admin
 
 - **Ver posts pendientes** - Lista de reportes esperando aprobación
 - **Aprobar posts** - Publicar reportes en la sección "Perdidos"
-- **Rechazar posts** - Eliminar reportes que no cumplan los criterios
+- **Rechazar posts** - Eliminar reportes que no cumplan los criterios (elimina imagen de Cloudinary)
+- **Eliminar posts** - Eliminar posts publicados (elimina imagen de Cloudinary)
+- **Ver posts publicados** - Lista de todos los posts aprobados
 
-### Configuración de Credenciales
+## 🚀 Despliegue
 
-Para producción, configura las siguientes variables de entorno en Render:
+### Backend (Render)
 
-```bash
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=tu_password_seguro
-ADMIN_CREATE_ON_STARTUP=true
-CORS_ALLOWED_ORIGINS=https://tumascotandil.vercel.app
-```
+El backend está desplegado en **Render** como un servicio web:
 
-**Importante:** La variable `CORS_ALLOWED_ORIGINS` es esencial para que el frontend pueda comunicarse con el backend en producción.
+- **Plataforma:** Render (Free Tier)
+- **Build:** Maven build automático desde Dockerfile
+- **Base de datos:** Supabase (PostgreSQL)
+- **Variables de entorno requeridas:**
+  - `DB_URL` - URL de conexión a Supabase
+  - `DB_USERNAME` - Usuario de Supabase
+  - `DB_PASSWORD` - Contraseña de Supabase
+  - `CLOUDINARY_ENABLED` - Habilitar Cloudinary (true/false)
+  - `CLOUDINARY_CLOUD_NAME` - Nombre de la nube en Cloudinary
+  - `CLOUDINARY_API_KEY` - API Key de Cloudinary
+  - `CLOUDINARY_API_SECRET` - API Secret de Cloudinary
+  - `ADMIN_USERNAME` - Usuario del administrador
+  - `ADMIN_PASSWORD` - Contraseña del administrador
+  - `CORS_ALLOWED_ORIGINS` - Orígenes permitidos (ej: https://tumascotandil.vercel.app)
 
-## 🔧 Configuración
+### Frontend (Vercel)
 
-### Backend
+El frontend está desplegado en **Vercel**:
 
-- **Puerto:** 8080
-- **Base de datos:** MySQL (puerto 3307)
-- **CORS:** Configurado para `http://localhost:5173` y `http://localhost:3000`
-- **Uploads:** Las imágenes se guardan en `backend/uploads/`
-
-### Frontend
-
-- **Puerto:** 5173 (Vite por defecto)
-- **API URL:** `http://localhost:8080`
-- **Hot Module Replacement (HMR):** Habilitado para desarrollo rápido
-
-### Base de Datos
-
-- **Motor:** MySQL 8.0
-- **Puerto:** 3307 (externo) / 3306 (interno del contenedor)
-- **Persistencia:** Los datos se guardan en el volumen Docker `mysql_data`
-- **Creación automática:** La base de datos se crea automáticamente al iniciar
+- **Plataforma:** Vercel (Free Tier)
+- **Build:** Vite build automático
+- **Variables de entorno requeridas:**
+  - `VITE_API_URL` - URL del backend en Render (ej: https://tumascotandil.onrender.com)
 
 ## 🔒 Seguridad
 
@@ -272,150 +170,15 @@ CORS_ALLOWED_ORIGINS=https://tumascotandil.vercel.app
 - **CORS configurado** para permitir solo orígenes específicos
 - **Validación de datos** en DTOs antes de procesar
 - **Moderación de contenido** mediante sistema de aprobación
-
-## 🐛 Solución de Problemas
-
-### Error: "No se pudo conectar con el servidor" en el panel Admin
-
-Este es un error común que indica que el frontend no puede comunicarse con el backend.
-
-**1. Verificar que el backend esté corriendo:**
-
-```bash
-cd backend
-docker-compose ps
-```
-
-Deberías ver el contenedor `tumascotandil-backend` con estado "Up". Si no está corriendo:
-
-```bash
-cd backend
-docker-compose up -d --build
-```
-
-**2. Verificar manualmente que el backend responda:**
-
-Abre tu navegador y ve a: `http://localhost:8080/posts`
-
-Deberías ver una respuesta (aunque sea un array vacío `[]`). Si ves un error, el backend no está corriendo.
-
-**3. Reiniciar el backend (IMPORTANTE):**
-
-Los cambios de configuración requieren que el backend se reinicie:
-
-```bash
-cd backend
-docker-compose restart backend
-```
-
-O si prefieres reconstruir completamente:
-
-```bash
-cd backend
-docker-compose down
-docker-compose up -d --build
-```
-
-**4. Verificar los logs del backend:**
-
-```bash
-cd backend
-docker-compose logs -f backend
-```
-
-Busca mensajes como:
-- "Started TumascotandilApplication"
-- "Usuario ADMIN creado"
-- Cualquier error de compilación
-
-**5. Verificar credenciales del admin:**
-
-Cuando el backend inicia, debería mostrar en los logs las credenciales del admin. Busca un mensaje como:
-
-```
-========================================
-Usuario ADMIN creado:
-Username: admin
-Password: [password generado]
-========================================
-```
-
-**6. Probar la conexión desde el navegador:**
-
-Abre la consola del navegador (F12) y ejecuta:
-
-```javascript
-fetch('http://localhost:8080/posts')
-  .then(r => r.json())
-  .then(console.log)
-  .catch(console.error)
-```
-
-Si esto funciona, el backend está corriendo correctamente.
-
-**Si el problema persiste:**
-- Verifica que no haya otro proceso usando el puerto 8080
-- Verifica que Docker esté corriendo
-- Revisa los logs del backend para ver errores de compilación
-- Asegúrate de que el frontend esté en `http://localhost:5173` (puerto por defecto de Vite)
-
-### El backend no inicia
-
-```bash
-cd backend
-docker-compose logs backend
-```
-
-Verifica que:
-- Docker esté corriendo
-- El puerto 3307 y 8080 no estén en uso
-- Tengas permisos para ejecutar Docker
-
-### El frontend no se conecta al backend
-
-- Verifica que el backend esté corriendo: `curl http://localhost:8080/posts`
-- Revisa la consola del navegador para errores de CORS
-- Asegúrate de que ambos servicios estén en los puertos correctos
-
-### Error de CORS
-
-El backend está configurado para permitir `http://localhost:5173` por defecto. Para producción, debes configurar la variable de entorno `CORS_ALLOWED_ORIGINS` en Render.
-
-**Solución para producción (Render):**
-
-1. Ve a tu servicio en Render
-2. Navega a **Environment** (Variables de entorno)
-3. Agrega la siguiente variable:
-   - **Key:** `CORS_ALLOWED_ORIGINS`
-   - **Value:** `https://tumascotandil.vercel.app` (o tu dominio de frontend)
-   
-   Si necesitas permitir múltiples orígenes, sepáralos con comas:
-   ```
-   https://tumascotandil.vercel.app,https://www.tumascotandil.vercel.app
-   ```
-
-4. Reinicia el servicio en Render para que los cambios surtan efecto
-
-**Nota:** Los cambios de CORS requieren reiniciar el backend para que surtan efecto.
-
-**Error común:** Si ves `Access to XMLHttpRequest ... has been blocked by CORS policy`, significa que el dominio del frontend no está en la lista de orígenes permitidos. Asegúrate de que `CORS_ALLOWED_ORIGINS` incluya exactamente el dominio desde donde se hace la petición (incluyendo `https://`).
-
-### Problemas con la base de datos
-
-```bash
-# Reiniciar la base de datos (elimina todos los datos)
-cd backend
-docker-compose down -v
-docker-compose up -d --build
-```
+- **Eliminación automática de imágenes** al rechazar o eliminar posts (Cloudinary)
 
 ## 📝 Notas Importantes
 
 - Los posts nuevos se crean en estado `PENDIENTE` y requieren aprobación del admin
-- Las imágenes se guardan en `backend/uploads/` (volumen de Docker)
-- La base de datos persiste en el volumen Docker `mysql_data`
-- Para producción, configura todas las credenciales mediante variables de entorno
-- El archivo `application.properties` contiene valores por defecto para desarrollo
+- Las imágenes se almacenan en **Cloudinary** (no localmente)
+- La base de datos está en **Supabase** (PostgreSQL en la nube)
+- Para producción, todas las credenciales se configuran mediante variables de entorno
+- El sistema elimina automáticamente las imágenes de Cloudinary al rechazar o eliminar posts para optimizar el uso del plan gratuito
 
 ## 📄 Licencia
 
