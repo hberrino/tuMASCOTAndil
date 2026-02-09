@@ -158,10 +158,9 @@ El backend está desplegado en **Render** como un servicio web:
 
 El frontend está desplegado en **Vercel**:
 
-- **Plataforma:** Vercel (Free Tier)
+- **Plataforma:** Vercel 
 - **Build:** Vite build automático
 - **Variables de entorno requeridas:**
-  - `VITE_API_URL` - URL del backend en Render (ej: https://tumascotandil.onrender.com)
 
 ## 🔒 Seguridad
 
@@ -178,12 +177,8 @@ El frontend está desplegado en **Vercel**:
 - Las imágenes se almacenan en **Cloudinary** (no localmente)
 - La base de datos está en **Supabase** (PostgreSQL en la nube)
 - Para producción, todas las credenciales se configuran mediante variables de entorno
-- El sistema elimina automáticamente las imágenes de Cloudinary al rechazar o eliminar posts para optimizar el uso del plan gratuito
-
-## 📄 Licencia
-
-Este proyecto es de código abierto y está disponible para uso comunitario.
+- El sistema elimina automáticamente las imágenes de Cloudinary al rechazar o eliminar posts para optimizar el uso del plan
 
 ---
 
-**Desarrollado con ❤️ para la comunidad de Tandil**
+**Desarrollado con ❤️ para ayudar a los animalitos de Tandil**
