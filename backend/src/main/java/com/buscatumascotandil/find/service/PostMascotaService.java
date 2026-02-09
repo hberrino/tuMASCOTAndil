@@ -79,6 +79,28 @@ public class PostMascotaService {
         PostMascota post = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post no encontrado con id: " + id));
         post.setEstado(EstadoPublicacion.RECHAZADO);
+        post.setActivo(false);
+        
+        // Eliminar la imagen: Cloudinary o local
+        if (post.getImagenUrl() != null && !post.getImagenUrl().isEmpty()) {
+            if (cloudinaryEnabled && cloudinaryService != null && post.getImagenUrl().startsWith("http")) {
+                // Eliminar de Cloudinary
+                cloudinaryService.deleteImage(post.getImagenUrl());
+            } else {
+                // Eliminar archivo local
+                try {
+                    String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
+                    Path rutaArchivo = Paths.get("uploads", rutaImagen);
+                    if (Files.exists(rutaArchivo)) {
+                        Files.delete(rutaArchivo);
+                    }
+                } catch (IOException e) {
+                    // Log el error pero no fallar la eliminación
+                    System.err.println("Error al eliminar imagen: " + e.getMessage());
+                }
+            }
+        }
+        
         return repository.save(post);
     }
 
