@@ -144,11 +144,13 @@ const BuscaTuMascota = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 md:py-12">
-      <div className="text-center mb-10">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 flex items-center justify-center gap-3">
-          <img src="/icons/findicon.png" alt="Buscar" className="w-10 h-10 md:w-12 md:h-12" />
-          <span>Busca tu Mascota</span>
+      <div className="text-center mb-8 sm:mb-10 md:mb-12">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 sm:mb-4">
+          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Busca tu Mascota
+          </span>
         </h2>
+        <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-4"></div>
         <p className="text-gray-600 text-lg">
           Completa el formulario para publicar tu mascota perdida
         </p>
@@ -430,25 +432,66 @@ const BuscaTuMascota = () => {
                 </div>
               </span>
             </label>
-            <input
-              type="file"
-              id="imagen"
-              name="imagen"
-              accept="image/*"
-              onChange={handleImageChange}
-              required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base hover:border-gray-400"
-            />
-            {imagen && (
-              <div className="mt-4 flex flex-col items-center gap-3 p-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-                <img
-                  src={URL.createObjectURL(imagen)}
-                  alt="Preview"
-                  className="max-w-full max-h-48 md:max-h-64 object-cover rounded-lg border-2 border-gray-200 shadow-md"
-                />
-                <span className="text-xs md:text-sm text-gray-600 font-medium">{imagen.name}</span>
-              </div>
-            )}
+            
+            {/* Área de carga de imagen mejorada */}
+            <div className="relative">
+              <input
+                type="file"
+                id="imagen"
+                name="imagen"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              {!imagen ? (
+                <label
+                  htmlFor="imagen"
+                  className="flex flex-col items-center justify-center w-full h-48 md:h-56 border-2 border-dashed border-indigo-300 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 cursor-pointer group"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-500 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300 shadow-lg group-hover:shadow-xl transform group-hover:scale-110">
+                      <svg className="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-base md:text-lg font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors">
+                        Haz clic para subir una imagen
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-500 mt-1">
+                        o arrastra y suelta aquí
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        JPG, PNG • Máximo 5MB
+                      </p>
+                    </div>
+                  </div>
+                </label>
+              ) : (
+                <div className="mt-4 flex flex-col items-center gap-3 p-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                  <img
+                    src={URL.createObjectURL(imagen)}
+                    alt="Preview"
+                    className="max-w-full max-h-48 md:max-h-64 object-cover rounded-lg border-2 border-gray-200 shadow-md"
+                  />
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs md:text-sm text-gray-600 font-medium">{imagen.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagen(null);
+                        document.getElementById('imagen').value = '';
+                      }}
+                      className="text-red-500 hover:text-red-700 text-xs font-semibold underline"
+                    >
+                      Cambiar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <div className="flex items-start gap-2 text-xs text-gray-500 bg-blue-50 border border-blue-200 rounded-lg p-2">
               <span className="text-blue-600 mt-0.5">💡</span>
               <div>

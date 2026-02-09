@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl } from '../services/api';
+import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl, getImageUrl } from '../services/api';
 
 const Admin = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -468,11 +468,14 @@ const Admin = ({ onClose }) => {
                   <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
                     {post.imagenUrl ? (
                       <img
-                        src={`${getApiBaseUrl()}${post.imagenUrl}`}
+                        src={getImageUrl(post.imagenUrl)}
                         alt={post.nombreMascota || 'Mascota'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                          // Usar data URI SVG para evitar bucle infinito si el fallback también falla
+                          if (!e.target.src.startsWith('data:')) {
+                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
+                          }
                         }}
                       />
                     ) : (
@@ -568,11 +571,14 @@ const Admin = ({ onClose }) => {
                   <div className="w-full md:w-64 h-48 md:h-64 flex-shrink-0 overflow-hidden bg-gray-200 rounded-lg">
                     {post.imagenUrl ? (
                       <img
-                        src={`${getApiBaseUrl()}${post.imagenUrl}`}
+                        src={getImageUrl(post.imagenUrl)}
                         alt={post.nombreMascota || 'Mascota'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                          // Usar data URI SVG para evitar bucle infinito si el fallback también falla
+                          if (!e.target.src.startsWith('data:')) {
+                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
+                          }
                         }}
                       />
                     ) : (

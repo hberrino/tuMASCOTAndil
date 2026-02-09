@@ -22,6 +22,15 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
+/* Cursor pointer para todos los botones por defecto */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* Utilidades personalizadas para animaciones */
 .fade-in {
   opacity: 0;
