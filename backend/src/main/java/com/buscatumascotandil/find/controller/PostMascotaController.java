@@ -31,14 +31,12 @@ public class PostMascotaController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             HttpServletRequest httpRequest
     ) {
-        // Aceptar tanto "imagen" como "image"
         MultipartFile archivoImagen = imagen != null ? imagen : image;
         
         if (archivoImagen == null || archivoImagen.isEmpty()) {
             throw new RuntimeException("El campo 'imagen' o 'image' es obligatorio");
         }
         
-        // Parsear el JSON desde String
         CrearPostMascotaRequest request;
         try {
             request = objectMapper.readValue(dataJson, CrearPostMascotaRequest.class);
@@ -88,7 +86,6 @@ public class PostMascotaController {
         return ResponseEntity.ok(PostMascotaMapper.toResponse(post));
     }
     
-    // Endpoints de admin (requieren autenticación)
     @GetMapping("/admin/pendientes")
     public ResponseEntity<List<PostMascotaResponse>> listarPendientesAdmin() {
         return listarPendientes();

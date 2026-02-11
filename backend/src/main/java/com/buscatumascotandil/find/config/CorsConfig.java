@@ -21,19 +21,14 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowCredentials(false)
                 .maxAge(3600);
 
-        // En desarrollo: localhost
-        // En producción: desde variable de entorno
         if (StringUtils.hasText(allowedOrigins)) {
-            // Si hay variable de entorno, usar esa
             String[] origins = allowedOrigins.split(",");
-            // Limpiar espacios en blanco
             for (int i = 0; i < origins.length; i++) {
                 origins[i] = origins[i].trim();
             }
             registration.allowedOrigins(origins);
             log.info("CORS configurado con orígenes permitidos: {}", String.join(", ", origins));
         } else {
-            // Por defecto: solo localhost (desarrollo)
             registration.allowedOrigins("http://localhost:5173", "http://localhost:3000");
             log.info("CORS usando configuración por defecto (localhost) - Variable CORS_ALLOWED_ORIGINS no configurada");
         }

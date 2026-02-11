@@ -46,7 +46,6 @@ public class EnvironmentValidator implements ApplicationListener<ApplicationEnvi
         if (url == null || url.isEmpty()) {
             return "[NO CONFIGURADO]";
         }
-        // Ocultar password si está en la URL
         if (url.contains("@")) {
             return url.substring(0, url.indexOf("@")) + "@[HOST]";
         }

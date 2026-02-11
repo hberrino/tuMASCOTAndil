@@ -40,11 +40,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneral(Exception ex) {
-        // Log del error para debugging
         ex.printStackTrace();
         
         Map<String, String> error = new HashMap<>();
-        // En desarrollo, mostrar el mensaje real. En producción, usar mensaje genérico
         String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Error interno del servidor";
         error.put("error", errorMessage);
         error.put("type", ex.getClass().getSimpleName());

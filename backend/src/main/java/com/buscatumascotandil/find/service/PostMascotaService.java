@@ -51,7 +51,6 @@ public class PostMascotaService {
         post.setEstado(EstadoPublicacion.PENDIENTE);
         post.setIpPublicacion(ip);
 
-        // Usar Cloudinary si está habilitado y disponible, sino guardar localmente
         String imageUrl = (cloudinaryEnabled && cloudinaryService != null)
                 ? cloudinaryService.uploadImage(imagen)
                 : guardarImagenLocal(imagen);
@@ -81,13 +80,10 @@ public class PostMascotaService {
         post.setEstado(EstadoPublicacion.RECHAZADO);
         post.setActivo(false);
         
-        // Eliminar la imagen: Cloudinary o local
         if (post.getImagenUrl() != null && !post.getImagenUrl().isEmpty()) {
             if (cloudinaryEnabled && cloudinaryService != null && post.getImagenUrl().startsWith("http")) {
-                // Eliminar de Cloudinary
                 cloudinaryService.deleteImage(post.getImagenUrl());
             } else {
-                // Eliminar archivo local
                 try {
                     String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
                     Path rutaArchivo = Paths.get("uploads", rutaImagen);
@@ -95,7 +91,6 @@ public class PostMascotaService {
                         Files.delete(rutaArchivo);
                     }
                 } catch (IOException e) {
-                    // Log el error pero no fallar la eliminación
                     System.err.println("Error al eliminar imagen: " + e.getMessage());
                 }
             }
@@ -116,7 +111,6 @@ public class PostMascotaService {
         PostMascota post = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post no encontrado con id: " + id));
         
-        // Incrementar vistas solo si está publicado
         if (post.getEstado() == EstadoPublicacion.PUBLICADO && post.getActivo()) {
             post.setVistas((post.getVistas() == null ? 0 : post.getVistas()) + 1);
             repository.save(post);
@@ -129,17 +123,13 @@ public class PostMascotaService {
         PostMascota post = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post no encontrado con id: " + id));
         
-        // Soft delete: marcar como inactivo
         post.setActivo(false);
         repository.save(post);
         
-        // Eliminar la imagen: Cloudinary o local
         if (post.getImagenUrl() != null && !post.getImagenUrl().isEmpty()) {
             if (cloudinaryEnabled && cloudinaryService != null && post.getImagenUrl().startsWith("http")) {
-                // Eliminar de Cloudinary
                 cloudinaryService.deleteImage(post.getImagenUrl());
             } else {
-                // Eliminar archivo local
                 try {
                     String rutaImagen = post.getImagenUrl().replaceFirst("/uploads/", "");
                     Path rutaArchivo = Paths.get("uploads", rutaImagen);
@@ -147,7 +137,6 @@ public class PostMascotaService {
                         Files.delete(rutaArchivo);
                     }
                 } catch (IOException e) {
-                    // Log el error pero no fallar la eliminación
                     System.err.println("Error al eliminar imagen: " + e.getMessage());
                 }
             }
@@ -159,14 +148,12 @@ public class PostMascotaService {
             throw new RuntimeException("La imagen es obligatoria");
         }
 
-        // Validar tipo de archivo
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new RuntimeException("El archivo debe ser una imagen válida");
         }
 
-        // Validar tamaño (máximo 5MB)
-        long maxSize = 5 * 1024 * 1024; // 5MB
+        long maxSize = 5 * 1024 * 1024;
         if (file.getSize() > maxSize) {
             throw new RuntimeException("La imagen no puede superar los 5MB");
         }
@@ -177,14 +164,12 @@ public class PostMascotaService {
                 throw new RuntimeException("El nombre del archivo no es válido");
             }
 
-            // Obtener extensión
             String extension = "";
             int lastDot = nombreOriginal.lastIndexOf('.');
             if (lastDot > 0) {
                 extension = nombreOriginal.substring(lastDot);
             }
 
-            // Generar nombre único
             String nombreArchivo = System.currentTimeMillis() + "_" + 
                     nombreOriginal.replaceAll("[^a-zA-Z0-9._-]", "_") + extension;
 

@@ -53,7 +53,6 @@ const BuscaTuMascota = () => {
     e.preventDefault();
     setMensaje({ tipo: '', texto: '' });
 
-    // Validaciones básicas
     if (!formData.nombreMascota.trim()) {
       setMensaje({ tipo: 'error', texto: 'El nombre de la mascota es obligatorio' });
       return;
@@ -82,12 +81,10 @@ const BuscaTuMascota = () => {
     try {
       setLoading(true);
 
-      // Convertir fecha de datetime-local a formato ISO para el backend
       const fechaISO = formData.fechaEvento
         ? new Date(formData.fechaEvento).toISOString()
         : null;
 
-      // Preparar los datos para enviar
       const dataToSend = {
         nombreMascota: formData.nombreMascota.trim(),
         descripcion: formData.descripcion.trim() || null,
@@ -103,7 +100,6 @@ const BuscaTuMascota = () => {
         whatsapp: formData.whatsapp.trim() || null,
       };
 
-      // Crear FormData para multipart/form-data
       const formDataToSend = new FormData();
       formDataToSend.append('data', JSON.stringify(dataToSend));
       formDataToSend.append('imagen', imagen);
@@ -115,7 +111,6 @@ const BuscaTuMascota = () => {
         texto: '¡Post creado exitosamente! Estará pendiente de aprobación.',
       });
 
-      // Limpiar formulario
       setFormData({
         nombreMascota: '',
         descripcion: '',
