@@ -13,7 +13,7 @@ const Admin = ({ onClose }) => {
   const [vistaActiva, setVistaActiva] = useState('pendientes'); // 'pendientes' o 'publicados'
   const [modalConfirmacion, setModalConfirmacion] = useState({ 
     mostrar: false, 
-    tipo: '', // 'eliminar' o 'rechazar'
+    tipo: '',
     id: null,
     nombreMascota: ''
   });
@@ -31,7 +31,6 @@ const Admin = ({ onClose }) => {
     try {
       setLoading(true);
       
-      // Primero verificar que el backend esté disponible
       const backendStatus = await verificarBackend();
       if (!backendStatus.disponible) {
         setError(`El backend no está disponible. Verifica que esté corriendo en ${getApiBaseUrl()}`);
@@ -307,7 +306,6 @@ const Admin = ({ onClose }) => {
     }).format(monto);
   };
 
-  // Verificar backend al montar el componente
   useEffect(() => {
     const verificar = async () => {
       const status = await verificarBackend();
@@ -422,7 +420,6 @@ const Admin = ({ onClose }) => {
         </div>
       )}
 
-      {/* Tabs para cambiar entre pendientes y publicados */}
       <div className="mb-6 flex gap-2 border-b border-gray-200">
         <button
           onClick={() => setVistaActiva('pendientes')}
@@ -449,7 +446,6 @@ const Admin = ({ onClose }) => {
         </button>
       </div>
 
-      {/* Vista de Posts Pendientes */}
       {vistaActiva === 'pendientes' && (
         <>
           {loading && posts.length === 0 ? (
@@ -552,7 +548,6 @@ const Admin = ({ onClose }) => {
         </>
       )}
 
-      {/* Vista de Posts Publicados */}
       {vistaActiva === 'publicados' && (
         <>
           {loading && postsPublicados.length === 0 ? (
@@ -641,7 +636,6 @@ const Admin = ({ onClose }) => {
         </>
       )}
 
-      {/* Modal de Confirmación */}
       {modalConfirmacion.mostrar && (
         <div 
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"

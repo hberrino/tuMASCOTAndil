@@ -9,7 +9,7 @@ const Perdidos = () => {
   const [error, setError] = useState(null);
   const [postSeleccionado, setPostSeleccionado] = useState(null);
   const [imagenExpandida, setImagenExpandida] = useState(null);
-  const [postsMostrados, setPostsMostrados] = useState(9); // Mostrar 9 inicialmente (3x3)
+  const [postsMostrados, setPostsMostrados] = useState(9);
 
   useEffect(() => {
     const cargarPosts = async () => {
@@ -48,11 +48,9 @@ const Perdidos = () => {
   };
 
   const abrirWhatsApp = (telefono, whatsapp, nombreMascota) => {
-    // Usar WhatsApp si está disponible, sino usar el teléfono
     const numero = whatsapp || telefono;
     if (!numero) return;
     
-    // Limpiar el número de teléfono (quitar espacios, guiones, etc.)
     const numeroLimpio = numero.replace(/\D/g, '');
     const mensaje = encodeURIComponent(`Hola, vi la publicación sobre ${nombreMascota || 'tu mascota'}. ¿Sigue perdida?`);
     window.open(`https://wa.me/${numeroLimpio}?text=${mensaje}`, '_blank');
@@ -132,7 +130,6 @@ const Perdidos = () => {
                       alt={post.nombreMascota || 'Mascota'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
-                        // Usar data URI SVG para evitar bucle infinito si el fallback también falla
                         if (!e.target.src.startsWith('data:')) {
                           e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect fill="%23e5e7eb" width="300" height="200"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="sans-serif" font-size="14"%3ESin imagen%3C/text%3E%3C/svg%3E';
                         }

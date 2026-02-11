@@ -62,11 +62,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Configurar orígenes permitidos desde variable de entorno
         if (StringUtils.hasText(allowedOrigins)) {
-            // Si hay variable de entorno, usar esa
             List<String> origins = Arrays.asList(allowedOrigins.split(","));
-            // Limpiar espacios en blanco
             origins = origins.stream()
                     .map(String::trim)
                     .filter(StringUtils::hasText)
@@ -74,7 +71,6 @@ public class SecurityConfig {
             configuration.setAllowedOrigins(origins);
             System.out.println("CORS (SecurityConfig) configurado con orígenes permitidos: " + String.join(", ", origins));
         } else {
-            // Por defecto: solo localhost (desarrollo)
             configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
             System.out.println("CORS (SecurityConfig) usando configuración por defecto (localhost) - Variable CORS_ALLOWED_ORIGINS no configurada");
         }
@@ -95,26 +91,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos (sin login requerido)
-                        .requestMatchers("/").permitAll() // Raíz del API
-                        .requestMatchers("/health").permitAll() // Health check
-                        .requestMatchers("/actuator/health").permitAll() // Spring Actuator health (si está habilitado)
-                        .requestMatchers(HttpMethod.GET, "/posts").permitAll() // GET /posts (listar publicados)
-                        .requestMatchers(HttpMethod.POST, "/posts").permitAll() // POST /posts (crear)
-                        .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll() // GET /posts/{id} (ver detalles)
-                        .requestMatchers("/uploads/**").permitAll() // Imágenes
-                        .requestMatchers("/h2-console/**").permitAll() // H2 Console
-                        // Endpoints de admin (requieren autenticación como ADMIN)
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/health").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/posts/pendientes").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/aprobar").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/rechazar").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/encontrado").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN") // DELETE /posts/{id} requiere admin
+                        .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().denyAll() // Todo lo demás denegado
+                        .anyRequest().denyAll()
                 )
-                .httpBasic(httpBasic -> {}) // Solo para endpoints de admin
-                .headers(headers -> headers.frameOptions(frame -> frame.disable())); // Para H2 console
+                .httpBasic(httpBasic -> {})
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
     }
