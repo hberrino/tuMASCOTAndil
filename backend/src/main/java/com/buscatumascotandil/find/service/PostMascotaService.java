@@ -4,6 +4,7 @@ import com.buscatumascotandil.find.dto.CrearPostMascotaRequest;
 import com.buscatumascotandil.find.exception.NotFoundException;
 import com.buscatumascotandil.find.model.*;
 import com.buscatumascotandil.find.repository.PostMascotaRepository;
+import com.buscatumascotandil.find.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,17 +35,17 @@ public class PostMascotaService {
 
         PostMascota post = new PostMascota();
 
-        post.setNombreMascota(request.getNombreMascota());
-        post.setDescripcion(request.getDescripcion());
-        post.setZona(request.getZona());
+        post.setNombreMascota(SecurityUtils.sanitizeInput(request.getNombreMascota()));
+        post.setDescripcion(SecurityUtils.sanitizeInput(request.getDescripcion()));
+        post.setZona(SecurityUtils.sanitizeInput(request.getZona()));
         post.setFechaEvento(request.getFechaEvento());
         post.setMontoRecompensa(request.getMontoRecompensa());
 
         Contacto contacto = new Contacto();
-        contacto.setNombreContacto(request.getNombreContacto());
-        contacto.setTelefono(request.getTelefono());
-        contacto.setEmail(request.getEmail());
-        contacto.setWhatsapp(request.getWhatsapp());
+        contacto.setNombreContacto(SecurityUtils.sanitizeInput(request.getNombreContacto()));
+        contacto.setTelefono(SecurityUtils.sanitizeInput(request.getTelefono()));
+        contacto.setEmail(SecurityUtils.sanitizeInput(request.getEmail()));
+        contacto.setWhatsapp(SecurityUtils.sanitizeInput(request.getWhatsapp()));
 
         post.setContacto(contacto);
         post.setTipoPublicacion(request.getTipoPublicacion());
@@ -164,14 +165,16 @@ public class PostMascotaService {
                 throw new RuntimeException("El nombre del archivo no es válido");
             }
 
+            String nombreSanitizado = SecurityUtils.sanitizeFilename(nombreOriginal);
+            
             String extension = "";
-            int lastDot = nombreOriginal.lastIndexOf('.');
+            int lastDot = nombreSanitizado.lastIndexOf('.');
             if (lastDot > 0) {
-                extension = nombreOriginal.substring(lastDot);
+                extension = nombreSanitizado.substring(lastDot);
             }
 
             String nombreArchivo = System.currentTimeMillis() + "_" + 
-                    nombreOriginal.replaceAll("[^a-zA-Z0-9._-]", "_") + extension;
+                    nombreSanitizado.replaceAll("[^a-zA-Z0-9._-]", "_") + extension;
 
             Path ruta = Paths.get("uploads");
             Files.createDirectories(ruta);
