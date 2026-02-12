@@ -49,6 +49,15 @@ const Navbar = ({ onNavigate }) => {
             </li>
             <li>
               <a
+                href="#encontrados"
+                onClick={(e) => handleClick(e, 'encontrados')}
+                className="text-sm md:text-base text-pink-700 hover:text-pink-900 transition-all duration-200 font-bold px-4 py-2.5 border-l-2 border-pink-300/60 hover:border-pink-600 hover:bg-pink-100/70 hover:shadow-sm active:scale-[0.98] active:bg-pink-200"
+              >
+                Encontrados
+              </a>
+            </li>
+            <li>
+              <a
                 href="#busca-tu-mascota"
                 onClick={(e) => handleClick(e, 'buscaTuMascota')}
                 className="text-sm md:text-base text-indigo-600 hover:text-indigo-900 transition-all duration-200 font-bold px-4 py-2.5 border-l-2 border-indigo-300/60 hover:border-indigo-600 hover:bg-indigo-100/70 hover:shadow-sm active:scale-[0.98] active:bg-indigo-200"
@@ -106,6 +115,15 @@ const Navbar = ({ onNavigate }) => {
                 className="block text-base text-violet-700 hover:text-violet-900 hover:bg-violet-100/70 transition-all duration-200 font-bold px-6 py-4 border-b border-gray-100 border-l-2 border-violet-300/60 hover:border-violet-600 hover:shadow-sm active:bg-violet-200"
               >
                 🐕 Perdidos
+              </a>
+            </li>
+            <li>
+              <a
+                href="#encontrados"
+                onClick={(e) => handleClick(e, 'encontrados')}
+                className="block text-base text-pink-700 hover:text-pink-900 hover:bg-pink-100/70 transition-all duration-200 font-bold px-6 py-4 border-b border-gray-100 border-l-2 border-pink-300/60 hover:border-pink-600 hover:shadow-sm active:bg-pink-200"
+              >
+                🐾 Encontrados
               </a>
             </li>
             <li>

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { getPostsPublicados, getImageUrl } from '../services/api';
 import './Perdidos.css';
 
-const Perdidos = () => {
+const Encontrados = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,8 +16,8 @@ const Perdidos = () => {
       try {
         setLoading(true);
         const data = await getPostsPublicados();
-        const perdidos = data.filter(post => post.tipoPublicacion === 'PERDIDO');
-        setPosts(perdidos);
+        const encontrados = data.filter(post => post.tipoPublicacion === 'ENCONTRADO');
+        setPosts(encontrados);
         setError(null);
       } catch (err) {
         setError('Error al cargar los posts. Por favor, intenta nuevamente.');
@@ -53,7 +53,7 @@ const Perdidos = () => {
     if (!numero) return;
     
     const numeroLimpio = numero.replace(/\D/g, '');
-    const mensaje = encodeURIComponent(`Hola, vi la publicación sobre ${nombreMascota || 'tu mascota'}. ¿Sigue perdida?`);
+    const mensaje = encodeURIComponent(`Hola, creo que reconozco a ${nombreMascota || 'esta mascota'}. ¿Podemos coordinar?`);
     window.open(`https://wa.me/${numeroLimpio}?text=${mensaje}`, '_blank');
   };
 
@@ -79,7 +79,7 @@ const Perdidos = () => {
     return (
       <div className="w-full max-w-7xl mx-auto px-4 py-8">
         <div className="text-center text-gray-600 py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
           <p className="mt-4">Cargando posts...</p>
         </div>
       </div>
@@ -100,17 +100,17 @@ const Perdidos = () => {
     <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12">
       <div className="text-center mb-8 sm:mb-10 md:mb-12">
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 sm:mb-4">
-          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Mascotas Perdidas
+          <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
+            Mascotas Encontradas
           </span>
         </h2>
-        <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-pink-500 mx-auto rounded-full mb-4"></div>
-        <p className="text-gray-600 text-lg">Ayuda a encontrar a estas mascotas</p>
+        <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-orange-500 mx-auto rounded-full mb-4"></div>
+        <p className="text-gray-600 text-lg">Mascotas que fueron encontradas y buscan a sus dueños</p>
       </div>
       {posts.length === 0 ? (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">😔</div>
-          <p className="text-gray-600 text-lg">No hay mascotas perdidas publicadas en este momento.</p>
+          <div className="text-6xl mb-4">🐾</div>
+          <p className="text-gray-600 text-lg">No hay mascotas encontradas publicadas en este momento.</p>
         </div>
       ) : (
         <>
@@ -118,7 +118,7 @@ const Perdidos = () => {
             {posts.slice(0, postsMostrados).map((post) => (
             <div
               key={post.id}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-2 group flex flex-col h-full"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-pink-200 hover:-translate-y-2 group flex flex-col h-full"
             >
               <div className="w-full h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative flex-shrink-0">
                 {post.imagenUrl ? (
@@ -136,7 +136,6 @@ const Perdidos = () => {
                         }
                       }}
                     />
-                    {/* Overlay con icono de expandir */}
                     <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover/image:opacity-100">
                       <div className="bg-white/90 rounded-full p-3 transform scale-0 group-hover/image:scale-100 transition-transform duration-300">
                         <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,12 +151,10 @@ const Perdidos = () => {
                 )}
               </div>
               <div className="p-5 md:p-6 flex flex-col flex-1">
-                {/* Título - siempre presente */}
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 group-hover:text-indigo-600 transition-colors">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 group-hover:text-pink-600 transition-colors">
                   {post.nombreMascota || 'Sin nombre'}
                 </h3>
                 
-                {/* Descripción - siempre ocupa el mismo espacio */}
                 <div className="mb-4 min-h-[4.5rem]">
                   {post.descripcion ? (
                     <p className="text-gray-600 text-sm md:text-base line-clamp-3 leading-relaxed">
@@ -170,23 +167,21 @@ const Perdidos = () => {
                   )}
                 </div>
                 
-                {/* Zona y Fecha - siempre ocupa el mismo espacio */}
                 <div className="space-y-2 mb-4 min-h-[3.5rem]">
                   {post.zona && (
                     <p className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="text-indigo-600">📍</span>
-                      <span className="font-medium">Zona:</span> {post.zona}
+                      <span className="text-pink-600">📍</span>
+                      <span className="font-medium">Encontrada en:</span> {post.zona}
                     </p>
                   )}
                   {post.fechaEvento && (
                     <p className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="text-indigo-600">📅</span>
+                      <span className="text-pink-600">📅</span>
                       <span className="font-medium">Fecha:</span> {formatearFecha(post.fechaEvento)}
                     </p>
                   )}
                 </div>
                 
-                {/* Recompensa - siempre ocupa el mismo espacio */}
                 <div className="mb-3 min-h-[1.5rem]">
                   {post.montoRecompensa ? (
                     <span className="text-xs text-gray-500">
@@ -199,11 +194,10 @@ const Perdidos = () => {
                   )}
                 </div>
                 
-                {/* Botón de Contacto - siempre en la parte inferior */}
                 <div className="mt-auto pt-4 border-t border-gray-100">
                   <button
                     onClick={() => abrirDetalles(post)}
-                    className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-sm md:text-base shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    className="w-full py-2.5 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-semibold rounded-lg hover:from-pink-700 hover:to-rose-700 transition-all duration-300 text-sm md:text-base shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                   >
                     <img src="/icons/telephoneicon.png" alt="Contacto" className="w-5 h-5" />
                     <span>Ver Contacto</span>
@@ -214,19 +208,17 @@ const Perdidos = () => {
           ))}
           </div>
           
-          {/* Botón "Ver más" */}
           {postsMostrados < posts.length && (
             <div className="mt-8 text-center">
               <button
                 onClick={() => setPostsMostrados(prev => Math.min(prev + 9, posts.length))}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="px-8 py-3 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-semibold rounded-xl hover:from-pink-700 hover:to-rose-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Ver más mascotas ({posts.length - postsMostrados} restantes)
               </button>
             </div>
           )}
           
-          {/* Indicador cuando se muestran todos */}
           {postsMostrados >= posts.length && posts.length > 9 && (
             <div className="mt-8 text-center">
               <p className="text-gray-500 text-sm">
@@ -237,7 +229,6 @@ const Perdidos = () => {
         </>
       )}
 
-      {/* Modal de Detalles y Contacto */}
       {postSeleccionado && createPortal(
         <div 
           className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
@@ -247,8 +238,7 @@ const Perdidos = () => {
             className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header del Modal */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
+            <div className="bg-gradient-to-r from-pink-600 to-rose-600 p-4 text-white">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-bold">Información de Contacto</h3>
                 <button
@@ -260,7 +250,6 @@ const Perdidos = () => {
               </div>
             </div>
 
-            {/* Contenido del Modal */}
             <div className="p-6 space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-800 mb-2">Mascota: {postSeleccionado.nombreMascota || 'Sin nombre'}</h4>
@@ -284,7 +273,7 @@ const Perdidos = () => {
                       <p className="text-xs text-gray-500">Teléfono</p>
                       <a 
                         href={`tel:${postSeleccionado.telefono}`}
-                        className="font-medium text-indigo-600 hover:text-indigo-700"
+                        className="font-medium text-pink-600 hover:text-pink-700"
                       >
                         {postSeleccionado.telefono}
                       </a>
@@ -299,7 +288,7 @@ const Perdidos = () => {
                       <p className="text-xs text-gray-500">Email</p>
                       <a 
                         href={`mailto:${postSeleccionado.email}`}
-                        className="font-medium text-indigo-600 hover:text-indigo-700 break-all"
+                        className="font-medium text-pink-600 hover:text-pink-700 break-all"
                       >
                         {postSeleccionado.email}
                       </a>
@@ -308,7 +297,6 @@ const Perdidos = () => {
                 )}
               </div>
 
-              {/* Botones de Acción */}
               <div className="pt-4 space-y-2">
                 {(postSeleccionado.whatsapp || postSeleccionado.telefono) && (
                   <button
@@ -335,7 +323,7 @@ const Perdidos = () => {
 
                 {postSeleccionado.email && (
                   <a
-                    href={`mailto:${postSeleccionado.email}?subject=Consulta sobre ${postSeleccionado.nombreMascota || 'mascota perdida'}`}
+                    href={`mailto:${postSeleccionado.email}?subject=Reconozco a ${postSeleccionado.nombreMascota || 'esta mascota'}`}
                     className="block w-full py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center flex items-center justify-center gap-2"
                   >
                     <img src="/icons/gmailicon.png" alt="Email" className="w-5 h-5" />
@@ -349,14 +337,12 @@ const Perdidos = () => {
         document.body
       )}
 
-      {/* Modal de Imagen Expandida */}
       {imagenExpandida && createPortal(
         <div 
           className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={cerrarImagen}
         >
           <div className="relative max-w-7xl max-h-[95vh] w-full h-full flex items-center justify-center">
-            {/* Botón cerrar */}
             <button
               onClick={cerrarImagen}
               className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 text-4xl font-light w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors bg-black/50"
@@ -365,7 +351,6 @@ const Perdidos = () => {
               ×
             </button>
             
-            {/* Imagen */}
             <img
               src={imagenExpandida}
               alt="Imagen expandida"
@@ -380,4 +365,4 @@ const Perdidos = () => {
   );
 };
 
-export default Perdidos;
+export default Encontrados;
