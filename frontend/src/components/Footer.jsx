@@ -56,10 +56,16 @@ const Footer = ({ onNavigate }) => {
                 Perdidos
               </button>
               <button
+                onClick={() => handleNavClick('encontrados')}
+                className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
+              >
+                Encontrados
+              </button>
+              <button
                 onClick={() => handleNavClick('buscaTuMascota')}
                 className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
               >
-                Buscar tu mascota
+                Busca tu Mascota
               </button>
             </nav>
           </div>
