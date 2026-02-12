@@ -10,6 +10,7 @@ const Encontrados = () => {
   const [postSeleccionado, setPostSeleccionado] = useState(null);
   const [imagenExpandida, setImagenExpandida] = useState(null);
   const [postsMostrados, setPostsMostrados] = useState(9);
+  const [descripcionesExpandidas, setDescripcionesExpandidas] = useState({});
 
   useEffect(() => {
     const cargarPosts = async () => {
@@ -74,6 +75,15 @@ const Encontrados = () => {
   const cerrarImagen = () => {
     setImagenExpandida(null);
   };
+
+  const toggleDescripcion = (postId) => {
+    setDescripcionesExpandidas(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
+
+  const LIMITE_CARACTERES = 150;
 
   if (loading) {
     return (
@@ -155,13 +165,29 @@ const Encontrados = () => {
                   {post.nombreMascota || 'Sin nombre'}
                 </h3>
                 
-                <div className="mb-4 min-h-[4.5rem]">
+                {/* Descripción */}
+                <div className="mb-4">
                   {post.descripcion ? (
-                    <p className="text-gray-600 text-sm md:text-base line-clamp-3 leading-relaxed">
-                      {post.descripcion}
-                    </p>
+                    <div>
+                      <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                        {descripcionesExpandidas[post.id] || post.descripcion.length <= LIMITE_CARACTERES
+                          ? post.descripcion
+                          : `${post.descripcion.substring(0, LIMITE_CARACTERES)}...`}
+                      </p>
+                      {post.descripcion.length > LIMITE_CARACTERES && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleDescripcion(post.id);
+                          }}
+                          className="mt-2 text-pink-600 hover:text-pink-700 text-sm font-medium transition-colors"
+                        >
+                          {descripcionesExpandidas[post.id] ? 'Ver menos' : 'Ver más'}
+                        </button>
+                      )}
+                    </div>
                   ) : (
-                    <p className="text-gray-400 text-sm md:text-base line-clamp-3 leading-relaxed opacity-0">
+                    <p className="text-gray-400 text-sm md:text-base leading-relaxed opacity-0 min-h-[3rem]">
                       &nbsp;
                     </p>
                   )}
