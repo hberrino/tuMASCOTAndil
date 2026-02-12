@@ -43,9 +43,8 @@ public class GlobalExceptionHandler {
         ex.printStackTrace();
         
         Map<String, String> error = new HashMap<>();
-        String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Error interno del servidor";
+        String errorMessage = "Error interno del servidor";
         error.put("error", errorMessage);
-        error.put("type", ex.getClass().getSimpleName());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

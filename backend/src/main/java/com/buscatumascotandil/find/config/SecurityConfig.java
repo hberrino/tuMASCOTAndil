@@ -3,16 +3,19 @@ package com.buscatumascotandil.find.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -31,9 +34,15 @@ import java.util.stream.Collectors;
 public class SecurityConfig {
 
     private final UsuarioRepository usuarioRepository;
+    private final Environment environment;
 
     @Value("${cors.allowed.origins:}")
     private String allowedOrigins;
+    
+    private boolean isDevelopment() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        return Arrays.asList(activeProfiles).contains("dev") || activeProfiles.length == 0;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -76,8 +85,8 @@ public class SecurityConfig {
         }
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "X-Requested-With"));
+        configuration.setExposedHeaders(Arrays.asList("Content-Type"));
         configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -88,27 +97,57 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> {
+                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
+                    if (isDevelopment()) {
+                        csrf.ignoringRequestMatchers("/h2-console/**");
+                    }
+                    csrf.ignoringRequestMatchers(
+                            "/health",
+                            "/actuator/health",
+                            "/uploads/**",
+                            "/posts/pendientes",
+                            "/posts/{id}/aprobar",
+                            "/posts/{id}/rechazar",
+                            "/posts/{id}/encontrado",
+                            "/admin/**"
+                    );
+                    csrf.ignoringRequestMatchers(request -> 
+                        (request.getMethod().equals("POST") && request.getRequestURI().equals("/posts")) ||
+                        (request.getMethod().equals("DELETE") && request.getRequestURI().startsWith("/posts/")) ||
+                        (request.getMethod().equals("PATCH") && request.getRequestURI().startsWith("/posts/")));
+                })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts").permitAll()
                         .requestMatchers(HttpMethod.POST, "/posts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/posts/pendientes").hasRole("ADMIN")
+                        .requestMatchers("/uploads/**").permitAll();
+                    
+                    if (isDevelopment()) {
+                        auth.requestMatchers("/h2-console/**").permitAll();
+                    } else {
+                        auth.requestMatchers("/h2-console/**").denyAll();
+                    }
+                    
+                    auth.requestMatchers("/posts/pendientes").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/aprobar").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/rechazar").hasRole("ADMIN")
                         .requestMatchers("/posts/{id}/encontrado").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().denyAll()
-                )
+                        .anyRequest().denyAll();
+                })
                 .httpBasic(httpBasic -> {})
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .contentTypeOptions(contentType -> {})
+                        .httpStrictTransportSecurity(hsts -> hsts.maxAgeInSeconds(31536000)));
 
         return http.build();
     }

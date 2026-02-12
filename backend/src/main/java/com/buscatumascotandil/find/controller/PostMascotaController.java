@@ -41,7 +41,7 @@ public class PostMascotaController {
         try {
             request = objectMapper.readValue(dataJson, CrearPostMascotaRequest.class);
         } catch (Exception e) {
-            throw new RuntimeException("Error al parsear el JSON en el campo 'data': " + e.getMessage());
+            throw new RuntimeException("Error al procesar los datos enviados");
         }
 
         PostMascota post = service.crearDesdeRequest(
