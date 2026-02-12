@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Inicio from './components/Inicio';
 import Perdidos from './components/Perdidos';
+import Encontrados from './components/Encontrados';
 import BuscaTuMascota from './components/BuscaTuMascota';
 import Footer from './components/Footer';
 import './App.css';
@@ -10,6 +11,7 @@ function App() {
   const sectionsRef = useRef({
     inicio: useRef(null),
     perdidos: useRef(null),
+    encontrados: useRef(null),
     buscaTuMascota: useRef(null),
   });
 
@@ -85,6 +87,15 @@ function App() {
           className="min-h-screen px-4 py-16 fade-in relative"
         >
           <Perdidos />
+        </section>
+
+        {/* Sección Encontrados */}
+        <section
+          ref={sectionsRef.current.encontrados}
+          id="encontrados"
+          className="min-h-screen px-4 py-16 fade-in relative"
+        >
+          <Encontrados />
         </section>
 
         {/* Sección Busca tu Mascota */}
