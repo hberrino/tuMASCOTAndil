@@ -67,6 +67,12 @@ const Footer = ({ onNavigate }) => {
               >
                 Busca tu Mascota
               </button>
+              <button
+                onClick={() => handleNavClick('veterinarias')}
+                className="text-gray-300 hover:text-white transition-colors duration-200 text-center md:text-left text-sm sm:text-base hover:underline"
+              >
+                Veterinarias
+              </button>
             </nav>
           </div>
 
