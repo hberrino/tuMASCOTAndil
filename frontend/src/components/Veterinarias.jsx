@@ -226,20 +226,30 @@ const Veterinarias = () => {
 
       {/* Clínicas Adicionales */}
       <div className="mt-12 pt-8 border-t border-gray-200">
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
-          <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-            Centros Adicionales
-          </span>
-        </h3>
-        <div className="bg-gray-50 rounded-2xl p-6 md:p-8">
-          <p className="text-gray-600 text-sm md:text-base mb-4 text-center">
-            Centros relacionados con atención veterinaria y servicios para mascotas:
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 text-center">
+            <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+              Centros Adicionales
+            </span>
+          </h3>
+          <p className="text-gray-600 text-sm md:text-base mb-6 text-center">
+            Centros relacionados con atención veterinaria y servicios para mascotas
           </p>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {clinicasAdicionales.map((clinica, index) => (
-              <div key={index} className="text-center md:text-left">
-                <p className="text-gray-800 font-medium text-sm md:text-base">
-                  <span className="font-semibold">{clinica.nombre}</span> - {clinica.direccion}
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-gray-200 p-5 md:p-6 text-center"
+              >
+                <div className="mb-3">
+                  <span className="text-3xl">🏥</span>
+                </div>
+                <h4 className="font-bold text-gray-800 text-base md:text-lg mb-2">
+                  {clinica.nombre}
+                </h4>
+                <p className="text-gray-600 text-sm md:text-base flex items-center justify-center gap-2">
+                  <span className="text-gray-400">📍</span>
+                  <span>{clinica.direccion}</span>
                 </p>
               </div>
             ))}
