@@ -4,6 +4,7 @@ import Inicio from './components/Inicio';
 import Perdidos from './components/Perdidos';
 import Encontrados from './components/Encontrados';
 import BuscaTuMascota from './components/BuscaTuMascota';
+import Veterinarias from './components/Veterinarias';
 import Footer from './components/Footer';
 import './App.css';
 
@@ -13,6 +14,7 @@ function App() {
     perdidos: useRef(null),
     encontrados: useRef(null),
     buscaTuMascota: useRef(null),
+    veterinarias: useRef(null),
   });
 
   // Scroll reveal effect
@@ -105,6 +107,15 @@ function App() {
           className="min-h-screen px-4 py-16 fade-in relative"
         >
           <BuscaTuMascota />
+        </section>
+
+        {/* Sección Veterinarias */}
+        <section
+          ref={sectionsRef.current.veterinarias}
+          id="veterinarias"
+          className="min-h-screen px-4 py-16 fade-in relative"
+        >
+          <Veterinarias />
         </section>
       </main>
 

@@ -65,6 +65,15 @@ const Navbar = ({ onNavigate }) => {
                 Busca tu Mascota
               </a>
             </li>
+            <li>
+              <a
+                href="#veterinarias"
+                onClick={(e) => handleClick(e, 'veterinarias')}
+                className="text-sm md:text-base text-green-700 hover:text-green-900 transition-all duration-200 font-bold px-4 py-2.5 border-l-2 border-green-300/60 hover:border-green-600 hover:bg-green-100/70 hover:shadow-sm active:scale-[0.98] active:bg-green-200"
+              >
+                Veterinarias
+              </a>
+            </li>
           </ul>
 
           {/* Botón Hamburguesa - Solo visible en móvil */}
@@ -134,6 +143,15 @@ const Navbar = ({ onNavigate }) => {
               >
                 <img src="/icons/findicon.png" alt="Buscar" className="w-5 h-5" />
                 <span>Busca tu Mascota</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#veterinarias"
+                onClick={(e) => handleClick(e, 'veterinarias')}
+                className="block text-base text-green-700 hover:text-green-900 hover:bg-green-100/70 transition-all duration-200 font-bold px-6 py-4 border-b border-gray-100 border-l-2 border-green-300/60 hover:border-green-600 hover:shadow-sm active:bg-green-200"
+              >
+                🏥 Veterinarias
               </a>
             </li>
           </ul>
