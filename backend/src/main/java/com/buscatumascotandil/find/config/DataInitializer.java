@@ -27,22 +27,29 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (createAdminOnStartup && !usuarioRepository.existsByUsername(adminUsername)) {
+        if (createAdminOnStartup) {
             String password = adminPassword;
             if (password == null || password.isEmpty()) {
                 password = "admin123";
                 System.out.println("ADVERTENCIA: Usando password por defecto. Configura app.admin.password en producción!");
             }
 
-            Usuario admin = new Usuario();
-            admin.setUsername(adminUsername);
+            Usuario admin = usuarioRepository.findByUsername(adminUsername).orElse(null);
+            
+            if (admin == null) {
+                admin = new Usuario();
+                admin.setUsername(adminUsername);
+                admin.setRol(Rol.ADMIN);
+                admin.setActivo(true);
+                System.out.println("Usuario ADMIN creado:");
+            } else {
+                System.out.println("Usuario ADMIN existente - actualizando contraseña:");
+            }
+            
             admin.setPassword(passwordEncoder.encode(password));
-            admin.setRol(Rol.ADMIN);
-            admin.setActivo(true);
             usuarioRepository.save(admin);
             
             System.out.println("========================================");
-            System.out.println("Usuario ADMIN creado:");
             System.out.println("Username: " + adminUsername);
             if (adminPassword == null || adminPassword.isEmpty()) {
                 System.out.println("Password: admin123 (CAMBIAR EN PRODUCCIÓN)");
