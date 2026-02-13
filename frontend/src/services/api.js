@@ -5,15 +5,73 @@ const API_BASE_URL = rawUrl.replace(/\/+$/, '');
 
 export const getApiBaseUrl = () => API_BASE_URL;
 
-export const getImageUrl = (imagenUrl) => {
+export const getImageUrl = (imagenUrl, options = {}) => {
   if (!imagenUrl) return null;
   
   if (imagenUrl.startsWith('http://') || imagenUrl.startsWith('https://')) {
+    if (imagenUrl.includes('cloudinary.com')) {
+      return optimizeCloudinaryUrl(imagenUrl, options);
+    }
     return imagenUrl;
   }
   
   const path = imagenUrl.startsWith('/') ? imagenUrl : `/${imagenUrl}`;
   return `${API_BASE_URL}${path}`;
+};
+
+const optimizeCloudinaryUrl = (url, options = {}) => {
+  const {
+    width = null,
+    height = null,
+    quality = 'auto',
+    format = 'auto',
+    crop = 'limit',
+    progressive = true
+  } = options;
+
+  if (url.includes('/upload/')) {
+    const parts = url.split('/upload/');
+    if (parts.length === 2) {
+      const baseUrl = parts[0] + '/upload';
+      const restOfPath = parts[1];
+      
+      let transformations = [];
+      
+      if (width) transformations.push(`w_${width}`);
+      if (height) transformations.push(`h_${height}`);
+      if (crop) transformations.push(`c_${crop}`);
+      transformations.push(`q_${quality}`);
+      transformations.push(`f_${format}`);
+      if (progressive) transformations.push(`fl_progressive`);
+      
+      const transformString = transformations.length > 0 
+        ? transformations.join(',') + '/' 
+        : '';
+      
+      return `${baseUrl}/${transformString}${restOfPath}`;
+    }
+  }
+  
+  return url;
+};
+
+export const getImageUrlThumbnail = (imagenUrl) => {
+  return getImageUrl(imagenUrl, {
+    width: 600,
+    height: 400,
+    quality: 'auto',
+    format: 'auto',
+    crop: 'limit'
+  });
+};
+
+export const getImageUrlFull = (imagenUrl) => {
+  return getImageUrl(imagenUrl, {
+    width: 1200,
+    quality: 'auto',
+    format: 'auto',
+    crop: 'limit'
+  });
 };
 
 const api = axios.create({
