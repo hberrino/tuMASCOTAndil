@@ -4,6 +4,7 @@ import Inicio from './components/Inicio';
 import Perdidos from './components/Perdidos';
 import Encontrados from './components/Encontrados';
 import BuscaTuMascota from './components/BuscaTuMascota';
+import ReportarEncuentro from './components/ReportarEncuentro';
 import Veterinarias from './components/Veterinarias';
 import Footer from './components/Footer';
 import './App.css';
@@ -14,6 +15,7 @@ function App() {
     perdidos: useRef(null),
     encontrados: useRef(null),
     buscaTuMascota: useRef(null),
+    reportarEncuentro: useRef(null),
     veterinarias: useRef(null),
   });
 
@@ -107,6 +109,15 @@ function App() {
           className="min-h-screen px-4 py-16 fade-in relative"
         >
           <BuscaTuMascota />
+        </section>
+
+        {/* Sección Reportar Encuentro */}
+        <section
+          ref={sectionsRef.current.reportarEncuentro}
+          id="reportar-encuentro"
+          className="min-h-screen px-4 py-16 fade-in relative"
+        >
+          <ReportarEncuentro />
         </section>
 
         {/* Sección Veterinarias */}
