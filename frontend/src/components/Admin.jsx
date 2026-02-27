@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl, getImageUrlThumbnail, getAvisosEncuentro } from '../services/api';
+import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl, getImageUrlThumbnail, getAvisosEncuentro, eliminarAvisoEncuentro } from '../services/api';
 
 const Admin = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -295,6 +295,55 @@ const Admin = ({ onClose }) => {
         handleLogout();
       } else if (err.response?.status === 404) {
         errorMessage = 'Post no encontrado.';
+      } else if (err.response?.status === 403) {
+        errorMessage = 'No tienes permisos para realizar esta acción.';
+      } else if (err.response?.status) {
+        errorMessage = `Error del servidor (${err.response.status}): ${err.response.statusText || 'Error desconocido'}`;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setMensaje({
+        tipo: 'error',
+        texto: errorMessage,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const ejecutarEliminarAviso = async (id) => {
+    const savedUsername = sessionStorage.getItem('admin_username');
+    const savedPassword = sessionStorage.getItem('admin_password');
+
+    if (!savedUsername || !savedPassword) {
+      setMensaje({
+        tipo: 'error',
+        texto: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
+      });
+      handleLogout();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMensaje({ tipo: '', texto: '' });
+      await eliminarAvisoEncuentro(id, savedUsername, savedPassword);
+      setMensaje({
+        tipo: 'success',
+        texto: 'Aviso eliminado exitosamente.',
+      });
+      setTimeout(async () => {
+        await cargarAvisosEncuentro();
+      }, 500);
+    } catch (err) {
+      let errorMessage = 'Error al eliminar el aviso. Intenta nuevamente.';
+      
+      if (err.response?.status === 401) {
+        errorMessage = 'No autorizado. Verifica tus credenciales.';
+        handleLogout();
+      } else if (err.response?.status === 404) {
+        errorMessage = 'Aviso no encontrado.';
       } else if (err.response?.status === 403) {
         errorMessage = 'No tienes permisos para realizar esta acción.';
       } else if (err.response?.status) {
@@ -703,8 +752,17 @@ const Admin = ({ onClose }) => {
                     </div>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">ID: {aviso.id}</span>
                   </div>
-                  <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-800">
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-800 mb-3">
                     <p>📢 <strong>Aviso de encuentro:</strong> Se reportó que esta mascota ha sido encontrada.</p>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => abrirModalConfirmacion('eliminarAviso', aviso.id, aviso.nombreMascota)}
+                      disabled={loading}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base"
+                    >
+                      🗑️ Eliminar
+                    </button>
                   </div>
                 </div>
               ))}
@@ -724,20 +782,22 @@ const Admin = ({ onClose }) => {
           >
             {/* Header del Modal */}
             <div className={`p-6 ${
-              modalConfirmacion.tipo === 'eliminar' 
+              modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso'
                 ? 'bg-gradient-to-r from-orange-500 to-red-500' 
                 : 'bg-gradient-to-r from-red-500 to-pink-500'
             } text-white`}>
               <div className="flex items-center gap-3">
                 <div className="text-4xl">
-                  {modalConfirmacion.tipo === 'eliminar' ? '🗑️' : '⚠️'}
+                  {modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso' ? '🗑️' : '⚠️'}
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">
-                    {modalConfirmacion.tipo === 'eliminar' ? 'Eliminar Post' : 'Rechazar Post'}
+                    {modalConfirmacion.tipo === 'eliminar' ? 'Eliminar Post' 
+                     : modalConfirmacion.tipo === 'eliminarAviso' ? 'Eliminar Aviso'
+                     : 'Rechazar Post'}
                   </h3>
                   <p className="text-sm opacity-90 mt-1">
-                    {modalConfirmacion.tipo === 'eliminar' 
+                    {modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso'
                       ? 'Esta acción no se puede deshacer' 
                       : 'El post será marcado como rechazado'}
                   </p>
@@ -750,15 +810,17 @@ const Admin = ({ onClose }) => {
               <p className="text-gray-700 text-base mb-4">
                 ¿Estás seguro de que deseas{' '}
                 <strong className="text-gray-900">
-                  {modalConfirmacion.tipo === 'eliminar' ? 'eliminar' : 'rechazar'}
+                  {modalConfirmacion.tipo === 'eliminar' ? 'eliminar' 
+                   : modalConfirmacion.tipo === 'eliminarAviso' ? 'eliminar'
+                   : 'rechazar'}
                 </strong>{' '}
-                el post de <strong className="text-indigo-600">{modalConfirmacion.nombreMascota}</strong>?
+                {modalConfirmacion.tipo === 'eliminarAviso' ? 'el aviso' : 'el post'} de <strong className="text-indigo-600">{modalConfirmacion.nombreMascota}</strong>?
               </p>
               
-              {modalConfirmacion.tipo === 'eliminar' && (
+              {(modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso') && (
                 <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-4 rounded">
                   <p className="text-sm text-orange-800">
-                    <strong>⚠️ Advertencia:</strong> Esta acción eliminará permanentemente el post y su imagen. No podrás recuperar esta información.
+                    <strong>⚠️ Advertencia:</strong> Esta acción eliminará permanentemente {modalConfirmacion.tipo === 'eliminarAviso' ? 'el aviso' : 'el post y su imagen'}. No podrás recuperar esta información.
                   </p>
                 </div>
               )}
@@ -775,12 +837,16 @@ const Admin = ({ onClose }) => {
                   onClick={confirmarAccion}
                   disabled={loading}
                   className={`flex-1 px-4 py-2.5 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm md:text-base ${
-                    modalConfirmacion.tipo === 'eliminar'
+                    modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso'
                       ? 'bg-orange-600 hover:bg-orange-700'
                       : 'bg-red-600 hover:bg-red-700'
                   }`}
                 >
-                  {loading ? 'Procesando...' : (modalConfirmacion.tipo === 'eliminar' ? 'Sí, Eliminar' : 'Sí, Rechazar')}
+                  {loading ? 'Procesando...' : (
+                    modalConfirmacion.tipo === 'eliminar' || modalConfirmacion.tipo === 'eliminarAviso' 
+                      ? 'Sí, Eliminar' 
+                      : 'Sí, Rechazar'
+                  )}
                 </button>
               </div>
             </div>

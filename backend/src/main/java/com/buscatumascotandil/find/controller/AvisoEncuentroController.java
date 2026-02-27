@@ -28,4 +28,10 @@ public class AvisoEncuentroController {
         List<AvisoEncuentroResponse> avisos = service.listarTodos();
         return ResponseEntity.ok(avisos);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

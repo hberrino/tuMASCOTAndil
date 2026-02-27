@@ -113,7 +113,8 @@ public class SecurityConfig {
                             "/posts/{id}/rechazar",
                             "/posts/{id}/encontrado",
                             "/admin/**",
-                            "/avisos-encuentro"
+                            "/avisos-encuentro",
+                            "/avisos-encuentro/{id}"
                     );
                     csrf.ignoringRequestMatchers(request -> 
                         (request.getMethod().equals("POST") && request.getRequestURI().equals("/posts")) ||
@@ -144,6 +145,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/avisos-encuentro").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/avisos-encuentro/{id}").hasRole("ADMIN")
                         .anyRequest().denyAll();
                 })
                 .httpBasic(httpBasic -> {})
