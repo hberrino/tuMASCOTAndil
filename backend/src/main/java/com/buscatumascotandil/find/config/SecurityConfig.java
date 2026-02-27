@@ -112,7 +112,8 @@ public class SecurityConfig {
                             "/posts/{id}/aprobar",
                             "/posts/{id}/rechazar",
                             "/posts/{id}/encontrado",
-                            "/admin/**"
+                            "/admin/**",
+                            "/avisos-encuentro"
                     );
                     csrf.ignoringRequestMatchers(request -> 
                         (request.getMethod().equals("POST") && request.getRequestURI().equals("/posts")) ||
@@ -127,7 +128,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/posts").permitAll()
                         .requestMatchers(HttpMethod.POST, "/posts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll()
-                        .requestMatchers("/uploads/**").permitAll();
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/avisos-encuentro").permitAll();
                     
                     if (isDevelopment()) {
                         auth.requestMatchers("/h2-console/**").permitAll();
@@ -141,6 +143,7 @@ public class SecurityConfig {
                         .requestMatchers("/posts/{id}/encontrado").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/posts/{id}").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/avisos-encuentro").hasRole("ADMIN")
                         .anyRequest().denyAll();
                 })
                 .httpBasic(httpBasic -> {})
