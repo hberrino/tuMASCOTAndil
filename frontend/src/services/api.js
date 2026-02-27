@@ -349,4 +349,51 @@ export const getAvisosEncuentro = async (username, password) => {
   }
 };
 
+export const eliminarAvisoEncuentro = async (id, username, password) => {
+  try {
+    if (!username || !password) {
+      throw new Error('Credenciales no proporcionadas');
+    }
+    
+    const credentials = btoa(`${username}:${password}`);
+    const url = `${API_BASE_URL}/avisos-encuentro/${id}`;
+    
+    const response = await axios.delete(
+      url,
+      {
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false,
+        validateStatus: function (status) {
+          return status < 500;
+        },
+      }
+    );
+    
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
+    }
+  } catch (error) {
+    console.error('Error al eliminar aviso de encuentro:', error);
+    if (error.response) {
+      console.error('Respuesta del servidor:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+      });
+      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+    } else if (error.request) {
+      console.error('No hubo respuesta del servidor:', error.request);
+      throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+    } else {
+      console.error('Error al configurar la petición:', error.message);
+      throw error;
+    }
+  }
+};
+
 export default api;

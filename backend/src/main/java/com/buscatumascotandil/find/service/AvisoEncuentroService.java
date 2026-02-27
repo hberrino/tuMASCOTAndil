@@ -2,6 +2,7 @@ package com.buscatumascotandil.find.service;
 
 import com.buscatumascotandil.find.dto.AvisoEncuentroRequest;
 import com.buscatumascotandil.find.dto.AvisoEncuentroResponse;
+import com.buscatumascotandil.find.exception.NotFoundException;
 import com.buscatumascotandil.find.model.AvisoEncuentro;
 import com.buscatumascotandil.find.repository.AvisoEncuentroRepository;
 import com.buscatumascotandil.find.util.SecurityUtils;
@@ -28,6 +29,12 @@ public class AvisoEncuentroService {
         return repository.findAllByOrderByFechaCreacionDesc().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void eliminar(Long id) {
+        AvisoEncuentro aviso = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Aviso no encontrado con id: " + id));
+        repository.delete(aviso);
     }
 
     private AvisoEncuentroResponse toResponse(AvisoEncuentro aviso) {
