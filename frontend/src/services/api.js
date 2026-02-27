@@ -312,4 +312,41 @@ export const eliminarPost = async (id, username, password) => {
   }
 };
 
+export const reportarEncuentro = async (nombreMascota) => {
+  try {
+    const response = await api.post('/avisos-encuentro', {
+      nombreMascota: nombreMascota,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al reportar encuentro:', error);
+    throw error;
+  }
+};
+
+export const getAvisosEncuentro = async (username, password) => {
+  try {
+    if (!username || !password) {
+      throw new Error('Credenciales no proporcionadas');
+    }
+    
+    const credentials = btoa(`${username}:${password}`);
+    
+    const response = await axios.get(
+      `${API_BASE_URL}/avisos-encuentro`,
+      {
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener avisos de encuentro:', error);
+    throw error;
+  }
+};
+
 export default api;

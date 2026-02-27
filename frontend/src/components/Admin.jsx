@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl, getImageUrlThumbnail } from '../services/api';
+import { getPostsPendientes, aprobarPost, rechazarPost, eliminarPost, getPostsPublicados, verificarBackend, getApiBaseUrl, getImageUrlThumbnail, getAvisosEncuentro } from '../services/api';
 
 const Admin = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -7,10 +7,11 @@ const Admin = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [posts, setPosts] = useState([]);
   const [postsPublicados, setPostsPublicados] = useState([]);
+  const [avisosEncuentro, setAvisosEncuentro] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
-  const [vistaActiva, setVistaActiva] = useState('pendientes'); // 'pendientes' o 'publicados'
+  const [vistaActiva, setVistaActiva] = useState('pendientes'); // 'pendientes', 'publicados' o 'avisos'
   const [modalConfirmacion, setModalConfirmacion] = useState({ 
     mostrar: false, 
     tipo: '',
@@ -104,6 +105,30 @@ const Admin = ({ onClose }) => {
     }
   };
 
+  const cargarAvisosEncuentro = async () => {
+    const savedUsername = sessionStorage.getItem('admin_username');
+    const savedPassword = sessionStorage.getItem('admin_password');
+    
+    if (!savedUsername || !savedPassword) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await getAvisosEncuentro(savedUsername, savedPassword);
+      setAvisosEncuentro(data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        handleLogout();
+        setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+      } else {
+        setError('Error al cargar avisos de encuentro.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const savedUsername = sessionStorage.getItem('admin_username');
     const savedPassword = sessionStorage.getItem('admin_password');
@@ -111,6 +136,7 @@ const Admin = ({ onClose }) => {
     if (savedUsername && savedPassword) {
       cargarPostsPendientes();
       cargarPostsPublicados();
+      cargarAvisosEncuentro();
     }
   }, []);
 
@@ -444,6 +470,19 @@ const Admin = ({ onClose }) => {
         >
           Publicados ({postsPublicados.length})
         </button>
+        <button
+          onClick={() => {
+            setVistaActiva('avisos');
+            cargarAvisosEncuentro();
+          }}
+          className={`px-4 py-2 font-medium text-sm md:text-base transition-colors ${
+            vistaActiva === 'avisos'
+              ? 'border-b-2 border-indigo-600 text-indigo-600'
+              : 'text-gray-600 hover:text-gray-800'
+          }`}
+        >
+          Avisos ({avisosEncuentro.length})
+        </button>
       </div>
 
       {vistaActiva === 'pendientes' && (
@@ -628,6 +667,44 @@ const Admin = ({ onClose }) => {
                         🗑️ Eliminar
                       </button>
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {vistaActiva === 'avisos' && (
+        <>
+          {loading && avisosEncuentro.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">Cargando avisos de encuentro...</div>
+          ) : avisosEncuentro.length === 0 ? (
+            <div className="text-center text-gray-600 py-12">
+              <p>No hay avisos de encuentro registrados.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {avisosEncuentro.map((aviso) => (
+                <div
+                  key={aviso.id}
+                  className="bg-white rounded-xl shadow-md p-4 md:p-6 border-l-4 border-indigo-500"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+                        🐾 {aviso.nombreMascota}
+                      </h3>
+                      {aviso.fechaCreacion && (
+                        <p className="text-sm text-gray-500">
+                          <strong>Fecha de reporte:</strong> {formatearFecha(aviso.fechaCreacion)}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">ID: {aviso.id}</span>
+                  </div>
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-800">
+                    <p>📢 <strong>Aviso de encuentro:</strong> Se reportó que esta mascota ha sido encontrada.</p>
                   </div>
                 </div>
               ))}
