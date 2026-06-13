@@ -33,11 +33,19 @@ const Perdidos = () => {
 
   useEffect(() => {
     if (posts.length < 2) return undefined;
-    const intervalId = window.setInterval(() => {
+    const timeoutId = window.setTimeout(() => {
       setIndice((actual) => (actual + 1) % posts.length);
     }, 6000);
-    return () => window.clearInterval(intervalId);
-  }, [posts.length]);
+    return () => window.clearTimeout(timeoutId);
+  }, [indice, posts.length]);
+
+  const mostrarAnterior = () => {
+    setIndice((actual) => (actual - 1 + posts.length) % posts.length);
+  };
+
+  const mostrarSiguiente = () => {
+    setIndice((actual) => (actual + 1) % posts.length);
+  };
 
   const postsVisibles = posts.length
     ? Array.from({ length: Math.min(3, posts.length) }, (_, offset) => posts[(indice + offset) % posts.length])
@@ -140,11 +148,11 @@ const Perdidos = () => {
             <div className="pet-carousel-head">
               <span>{String(indice + 1).padStart(2, '0')} / {posts.length}</span>
               <div>
-                <button type="button" onClick={() => setIndice((indice - 1 + posts.length) % posts.length)} aria-label="Mascotas perdidas anteriores">←</button>
-                <button type="button" onClick={() => setIndice((indice + 1) % posts.length)} aria-label="Mascotas perdidas siguientes">→</button>
+                <button type="button" onClick={mostrarAnterior} aria-label="Mascotas perdidas anteriores">←</button>
+                <button type="button" onClick={mostrarSiguiente} aria-label="Mascotas perdidas siguientes">→</button>
               </div>
             </div>
-            <div className="pet-carousel-track">
+            <div className="pet-carousel-track" key={`perdidos-${indice}`}>
             {postsVisibles.map((post) => (
             <div
               key={post.id}
