@@ -12,7 +12,6 @@ const Footer = ({ onNavigate }) => {
             <div><strong>Tu Mascota</strong><small>Tandil · red comunitaria</small></div>
           </div>
           <p className="footer-statement">Una comunidad que se mueve para que cada mascota pueda volver a casa.</p>
-          <a href="/admin" className="footer-admin" aria-label="Panel de administración">Acceso administrador <span>→</span></a>
         </div>
 
         <div className="footer-links">
