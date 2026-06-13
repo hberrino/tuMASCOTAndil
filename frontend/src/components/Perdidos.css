@@ -105,3 +105,35 @@
     font-size: 2.5rem;
   }
 }
+
+.pet-carousel { margin-top:1rem; }
+.pet-carousel-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+.pet-carousel-head > span { color:var(--muted); font-size:.76rem; font-weight:800; letter-spacing:.12em; }
+.pet-carousel-head > div { display:flex; gap:.55rem; }
+.pet-carousel-head button { width:44px; height:44px; color:var(--forest); border:1px solid rgba(25,72,65,.18); border-radius:50%; background:#fffdf8; font-size:1.15rem; transition:.2s; }
+.pet-carousel-head button:hover { color:white; background:var(--forest); transform:translateY(-2px); }
+.pet-carousel-found .pet-carousel-head button:hover { background:var(--coral); }
+.pet-carousel-track { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
+.pet-carousel-track > * { animation:petCardIn .45s ease both; }
+.pet-carousel-dots { display:flex; justify-content:center; gap:6px; margin-top:1.5rem; }
+.pet-carousel-dots span { width:6px; height:6px; border-radius:99px; background:#cbd5d1; transition:.25s; }
+.pet-carousel-dots span.active { width:24px; background:var(--coral); }
+
+.pet-contact-overlay { background:rgba(12,37,33,.74); backdrop-filter:blur(10px); }
+.pet-contact-modal { border:1px solid rgba(255,255,255,.2); border-radius:24px; box-shadow:0 30px 90px rgba(8,30,26,.35); animation:contactIn .3s ease both; }
+.pet-contact-header { padding:24px!important; background:var(--forest)!important; }
+.pet-contact-header h3 { font-family:var(--display); font-size:1.65rem; font-weight:600; letter-spacing:-.02em; }
+.pet-contact-header button { border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); }
+.pet-contact-body { padding:26px!important; background:#fffdf8; }
+.pet-contact-body > div:first-child { padding-bottom:16px; border-bottom:1px solid rgba(25,72,65,.12); }
+.pet-contact-body h4 { color:var(--ink)!important; font-family:var(--display); font-size:1.25rem; }
+.pet-contact-body .space-y-3 > div { padding:12px 14px; border:1px solid rgba(25,72,65,.1); border-radius:12px; background:white; }
+.pet-contact-body a { color:var(--forest)!important; }
+.pet-contact-actions { display:grid; grid-template-columns:1fr 1fr; gap:9px; border-top:1px solid rgba(25,72,65,.12); }
+.pet-contact-actions > * { margin:0!important; min-height:46px; border-radius:11px!important; }
+.pet-contact-actions > button:first-child { grid-column:1 / -1; background:var(--forest)!important; }
+.pet-contact-actions > a { display:flex!important; background:var(--mint)!important; }
+@keyframes petCardIn { from { opacity:0; transform:translateX(16px); } }
+@keyframes contactIn { from { opacity:0; transform:translateY(16px) scale(.97); } }
+@media (max-width:800px) { .pet-carousel-track { grid-template-columns:1fr; }.pet-carousel-track > *:not(:first-child) { display:none; } }
+@media (max-width:520px) { .pet-contact-actions { grid-template-columns:1fr; }.pet-contact-actions > button:first-child { grid-column:auto; } }

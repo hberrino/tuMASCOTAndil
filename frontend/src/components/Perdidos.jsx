@@ -9,7 +9,7 @@ const Perdidos = () => {
   const [error, setError] = useState(null);
   const [postSeleccionado, setPostSeleccionado] = useState(null);
   const [imagenExpandida, setImagenExpandida] = useState(null);
-  const [postsMostrados, setPostsMostrados] = useState(9);
+  const [indice, setIndice] = useState(0);
   const [descripcionesExpandidas, setDescripcionesExpandidas] = useState({});
 
   useEffect(() => {
@@ -30,6 +30,18 @@ const Perdidos = () => {
 
     cargarPosts();
   }, []);
+
+  useEffect(() => {
+    if (posts.length < 2) return undefined;
+    const intervalId = window.setInterval(() => {
+      setIndice((actual) => (actual + 1) % posts.length);
+    }, 6000);
+    return () => window.clearInterval(intervalId);
+  }, [posts.length]);
+
+  const postsVisibles = posts.length
+    ? Array.from({ length: Math.min(3, posts.length) }, (_, offset) => posts[(indice + offset) % posts.length])
+    : [];
 
   const formatearFecha = (fecha) => {
     if (!fecha) return '';
@@ -124,8 +136,16 @@ const Perdidos = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {posts.slice(0, postsMostrados).map((post) => (
+          <div className="pet-carousel">
+            <div className="pet-carousel-head">
+              <span>{String(indice + 1).padStart(2, '0')} / {posts.length}</span>
+              <div>
+                <button type="button" onClick={() => setIndice((indice - 1 + posts.length) % posts.length)} aria-label="Mascotas perdidas anteriores">←</button>
+                <button type="button" onClick={() => setIndice((indice + 1) % posts.length)} aria-label="Mascotas perdidas siguientes">→</button>
+              </div>
+            </div>
+            <div className="pet-carousel-track">
+            {postsVisibles.map((post) => (
             <div
               key={post.id}
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-2 group flex flex-col h-full"
@@ -238,43 +258,27 @@ const Perdidos = () => {
               </div>
             </div>
           ))}
+            </div>
+            <div className="pet-carousel-dots" aria-hidden="true">
+              {posts.map((post, dotIndex) => <span key={post.id} className={dotIndex === indice ? 'active' : ''} />)}
+            </div>
           </div>
-          
-          {/* Botón "Ver más" */}
-          {postsMostrados < posts.length && (
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => setPostsMostrados(prev => Math.min(prev + 9, posts.length))}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                Ver más mascotas ({posts.length - postsMostrados} restantes)
-              </button>
-            </div>
-          )}
-          
-          {/* Indicador cuando se muestran todos */}
-          {postsMostrados >= posts.length && posts.length > 9 && (
-            <div className="mt-8 text-center">
-              <p className="text-gray-500 text-sm">
-                Mostrando todos los {posts.length} posts
-              </p>
-            </div>
-          )}
+
         </>
       )}
 
       {/* Modal de Detalles y Contacto */}
       {postSeleccionado && createPortal(
         <div 
-          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          className="pet-contact-overlay fixed inset-0 z-[9999] flex items-center justify-center p-4"
           onClick={cerrarDetalles}
         >
           <div 
-            className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="pet-contact-modal bg-white max-w-md w-full overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header del Modal */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
+            <div className="pet-contact-header p-4 text-white">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-bold">Información de Contacto</h3>
                 <button
@@ -287,7 +291,7 @@ const Perdidos = () => {
             </div>
 
             {/* Contenido del Modal */}
-            <div className="p-6 space-y-4">
+            <div className="pet-contact-body p-6 space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-800 mb-2">Mascota: {postSeleccionado.nombreMascota || 'Sin nombre'}</h4>
               </div>
@@ -335,7 +339,7 @@ const Perdidos = () => {
               </div>
 
               {/* Botones de Acción */}
-              <div className="pt-4 space-y-2">
+              <div className="pet-contact-actions pt-4 space-y-2">
                 {(postSeleccionado.whatsapp || postSeleccionado.telefono) && (
                   <button
                     onClick={() => {
