@@ -98,7 +98,7 @@ const Admin = ({ onClose }) => {
       setLoading(true);
       const data = await getPostsPublicados();
       setPostsPublicados(data);
-    } catch (err) {
+    } catch {
       setError('Error al cargar posts publicados.');
     } finally {
       setLoading(false);

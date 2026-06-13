@@ -180,17 +180,10 @@ export const aprobarPost = async (id, username, password) => {
           'Content-Type': 'application/json',
         },
         withCredentials: false,
-        validateStatus: function (status) {
-          return status < 500;
-        },
       }
     );
     
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
-    }
+    return response.data;
   } catch (error) {
     console.error('Error al aprobar post:', error);
     if (error.response) {
@@ -200,7 +193,7 @@ export const aprobarPost = async (id, username, password) => {
         data: error.response.data,
         headers: error.response.headers,
       });
-      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+      throw error;
     } else if (error.request) {
       console.error('No hubo respuesta del servidor:', error.request);
       throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
@@ -231,17 +224,10 @@ export const rechazarPost = async (id, username, password) => {
           'Content-Type': 'application/json',
         },
         withCredentials: false,
-        validateStatus: function (status) {
-          return status < 500;
-        },
       }
     );
     
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
-    }
+    return response.data;
   } catch (error) {
     console.error('Error al rechazar post:', error);
     if (error.response) {
@@ -251,7 +237,7 @@ export const rechazarPost = async (id, username, password) => {
         data: error.response.data,
         headers: error.response.headers,
       });
-      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+      throw error;
     } else if (error.request) {
       console.error('No hubo respuesta del servidor:', error.request);
       throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
@@ -281,17 +267,10 @@ export const eliminarPost = async (id, username, password) => {
           'Content-Type': 'application/json',
         },
         withCredentials: false,
-        validateStatus: function (status) {
-          return status < 500;
-        },
       }
     );
     
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
-    }
+    return response.data;
   } catch (error) {
     console.error('Error al eliminar post:', error);
     if (error.response) {
@@ -301,7 +280,7 @@ export const eliminarPost = async (id, username, password) => {
         data: error.response.data,
         headers: error.response.headers,
       });
-      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+      throw error;
     } else if (error.request) {
       console.error('No hubo respuesta del servidor:', error.request);
       throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
@@ -366,17 +345,10 @@ export const eliminarAvisoEncuentro = async (id, username, password) => {
           'Content-Type': 'application/json',
         },
         withCredentials: false,
-        validateStatus: function (status) {
-          return status < 500;
-        },
       }
     );
     
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(`Error ${response.status}: ${response.statusText || 'Error desconocido'}`);
-    }
+    return response.data;
   } catch (error) {
     console.error('Error al eliminar aviso de encuentro:', error);
     if (error.response) {
@@ -385,7 +357,7 @@ export const eliminarAvisoEncuentro = async (id, username, password) => {
         statusText: error.response.statusText,
         data: error.response.data,
       });
-      throw new Error(`Error del servidor (${error.response.status}): ${error.response.statusText || 'Error desconocido'}`);
+      throw error;
     } else if (error.request) {
       console.error('No hubo respuesta del servidor:', error.request);
       throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
