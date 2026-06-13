@@ -1,10 +1,7 @@
-/* Padding top para el navbar fijo */
-.main-content {
-  padding-top: 80px;
-}
-
-@media (min-width: 768px) {
-  .main-content {
-    padding-top: 90px;
-  }
-}
+.app { position:relative; min-height:100vh; overflow:hidden; }
+.site-background { position:fixed; inset:0; z-index:-10; pointer-events:none; background:linear-gradient(180deg,#fbf8f1 0%,#f7f3eb 55%,#fbf8f1 100%); }
+.site-background::before { content:''; position:absolute; inset:0; opacity:.25; background-image:radial-gradient(rgba(25,72,65,.16) .65px,transparent .65px); background-size:22px 22px; mask-image:linear-gradient(to bottom,black,transparent 32%); }
+.main-content { padding-top:105px; }
+.main-content > section { min-height:auto!important; padding:80px 22px!important; }
+.main-content > #inicio { padding-top:18px!important; }
+@media (max-width:600px) { .main-content { padding-top:82px; }.main-content > section { padding:58px 14px!important; }.main-content > #inicio { padding:12px 10px 48px!important; } }

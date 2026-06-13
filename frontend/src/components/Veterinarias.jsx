@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import './Veterinarias.css';
 
 const Veterinarias = () => {
@@ -146,10 +147,18 @@ const Veterinarias = () => {
     { nombre: 'Centro Canino', direccion: 'Mayor M. Novoa 809 PB, B7000 Tandil' }
   ];
 
-  const abrirTelefono = (telefono) => {
-    const numeroLimpio = telefono.replace(/\D/g, '');
-    window.location.href = `tel:${numeroLimpio}`;
-  };
+  const [indice, setIndice] = useState(0);
+  const veterinariasVisibles = Array.from(
+    { length: 3 },
+    (_, offset) => veterinarias[(indice + offset) % veterinarias.length]
+  );
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setIndice((actual) => (actual + 1) % veterinarias.length);
+    }, 5000);
+    return () => window.clearInterval(intervalId);
+  }, [veterinarias.length]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12">
@@ -163,8 +172,16 @@ const Veterinarias = () => {
         <p className="text-gray-600 text-lg sm:text-xl">Encuentra atención veterinaria para tu mascota</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
-        {veterinarias.map((veterinaria) => (
+      <div className="vet-carousel">
+        <div className="vet-carousel-head">
+          <span>{String(indice + 1).padStart(2, '0')} / {veterinarias.length}</span>
+          <div>
+            <button type="button" onClick={() => setIndice((indice - 1 + veterinarias.length) % veterinarias.length)} aria-label="Veterinarias anteriores">←</button>
+            <button type="button" onClick={() => setIndice((indice + 1) % veterinarias.length)} aria-label="Veterinarias siguientes">→</button>
+          </div>
+        </div>
+        <div className="vet-carousel-track">
+        {veterinariasVisibles.map((veterinaria) => (
           <div
             key={veterinaria.id}
             className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-2 group flex flex-col h-full"
@@ -194,10 +211,6 @@ const Veterinarias = () => {
                   <span className="text-green-600 text-lg">📞</span>
                   <a
                     href={`tel:${veterinaria.telefono.replace(/\D/g, '')}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      abrirTelefono(veterinaria.telefono);
-                    }}
                     className="text-gray-700 hover:text-green-600 font-medium text-sm md:text-base transition-colors"
                   >
                     {veterinaria.telefono}
@@ -222,6 +235,10 @@ const Veterinarias = () => {
             </div>
           </div>
         ))}
+        </div>
+        <div className="vet-dots" aria-hidden="true">
+          {veterinarias.map((veterinaria, dotIndex) => <span key={veterinaria.id} className={dotIndex === indice ? 'active' : ''} />)}
+        </div>
       </div>
 
       {/* Clínicas Adicionales */}

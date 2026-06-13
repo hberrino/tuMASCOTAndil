@@ -1,20 +1,10 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
-import Admin from './Admin';
 import './Footer.css';
 
 const Footer = ({ onNavigate }) => {
-  const [showAdmin, setShowAdmin] = useState(false);
-
   const handleNavClick = (sectionId) => {
     if (onNavigate) {
       onNavigate(sectionId);
     }
-  };
-
-  const handleAdminClick = (e) => {
-    e.preventDefault();
-    setShowAdmin(!showAdmin);
   };
 
   return (
@@ -30,14 +20,14 @@ const Footer = ({ onNavigate }) => {
               <h4 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">
                 Tu Mascota Tandil
               </h4>
-              <button
-                onClick={handleAdminClick}
+              <a
+                href="/admin"
                 className="w-6 h-6 bg-gray-800/60 hover:bg-gray-700/80 text-white rounded-full flex items-center justify-center text-[10px] transition-all duration-200 hover:scale-110 shadow-md border border-gray-600/40"
                 aria-label="Panel de administración"
                 title="Panel de administración"
               >
                 🔐
-              </button>
+              </a>
             </div>
             <p className="text-gray-300 text-sm sm:text-base italic mb-4">
               "Proyecto comunitario para reunir mascotas con sus familias"
@@ -133,21 +123,6 @@ const Footer = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Modal Admin */}
-      {showAdmin && createPortal(
-        <div 
-          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setShowAdmin(false)}
-        >
-          <div 
-            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-gray-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Admin onClose={() => setShowAdmin(false)} />
-          </div>
-        </div>,
-        document.body
-      )}
     </footer>
   );
 };

@@ -18,6 +18,16 @@ const BuscaTuMascota = () => {
   const [imagen, setImagen] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+  const [paso, setPaso] = useState(1);
+
+  const avanzarAContacto = () => {
+    if (!formData.nombreMascota.trim() || !formData.zona.trim() || !formData.fechaEvento || !imagen) {
+      setMensaje({ tipo: 'error', texto: 'Completa los campos obligatorios y agrega una foto para continuar.' });
+      return;
+    }
+    setMensaje({ tipo: '', texto: '' });
+    setPaso(2);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,7 +114,7 @@ const BuscaTuMascota = () => {
       formDataToSend.append('data', JSON.stringify(dataToSend));
       formDataToSend.append('imagen', imagen);
 
-      const response = await crearPost(formDataToSend);
+      await crearPost(formDataToSend);
 
       setMensaje({
         tipo: 'success',
@@ -124,6 +134,7 @@ const BuscaTuMascota = () => {
         whatsapp: '',
       });
       setImagen(null);
+      setPaso(1);
       e.target.reset();
     } catch (error) {
       console.error('Error al crear post:', error);
@@ -153,10 +164,15 @@ const BuscaTuMascota = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 md:p-10 space-y-8"
+        className="compact-form bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 md:p-10 space-y-8"
       >
+        <div className="form-progress" aria-label={`Paso ${paso} de 2`}>
+          <button type="button" className={paso === 1 ? 'active' : 'complete'} onClick={() => setPaso(1)}><span>1</span> Mascota y foto</button>
+          <div className={paso === 2 ? 'complete' : ''} />
+          <button type="button" className={paso === 2 ? 'active' : ''}><span>2</span> Contacto</button>
+        </div>
         {/* Información de la Mascota */}
-        <div className="space-y-6">
+        {paso === 1 && <div className="form-step space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b-2 border-indigo-200">
             <span className="text-3xl">🐾</span>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -416,64 +432,47 @@ const BuscaTuMascota = () => {
               </span>
             </label>
             
-            {/* Área de carga de imagen mejorada */}
-            <div className="relative">
-              <input
-                type="file"
-                id="imagen"
-                name="imagen"
-                accept="image/*"
-                onChange={handleImageChange}
-                required
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              />
-              {!imagen ? (
-                <label
-                  htmlFor="imagen"
-                  className="flex flex-col items-center justify-center w-full h-48 md:h-56 border-2 border-dashed border-indigo-300 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 cursor-pointer group"
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-500 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300 shadow-lg group-hover:shadow-xl transform group-hover:scale-110">
-                      <svg className="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-base md:text-lg font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors">
-                        Haz clic para subir una imagen
-                      </p>
-                      <p className="text-xs md:text-sm text-gray-500 mt-1">
-                        o arrastra y suelta aquí
-                      </p>
-                      <p className="text-xs text-gray-400 mt-2">
-                        JPG, PNG • Máximo 5MB
-                      </p>
-                    </div>
-                  </div>
-                </label>
-              ) : (
-                <div className="mt-4 flex flex-col items-center gap-3 p-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-                  <img
-                    src={URL.createObjectURL(imagen)}
-                    alt="Preview"
-                    className="max-w-full max-h-48 md:max-h-64 object-cover rounded-lg border-2 border-gray-200 shadow-md"
-                  />
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs md:text-sm text-gray-600 font-medium">{imagen.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImagen(null);
-                        document.getElementById('imagen').value = '';
-                      }}
-                      className="text-red-500 hover:text-red-700 text-xs font-semibold underline"
-                    >
-                      Cambiar
-                    </button>
-                  </div>
+            <input
+              type="file"
+              id="imagen"
+              name="imagen"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
+              className="sr-only"
+            />
+            {!imagen ? (
+              <label htmlFor="imagen" className="image-uploader">
+                <span className="image-uploader-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4" />
+                  </svg>
+                </span>
+                <span className="image-uploader-copy">
+                  <strong>Agregar una foto</strong>
+                  <small>Elegí una imagen clara en JPG o PNG, hasta 5 MB.</small>
+                </span>
+                <span className="image-uploader-action">Seleccionar</span>
+              </label>
+            ) : (
+              <div className="image-preview">
+                <img src={URL.createObjectURL(imagen)} alt="Vista previa de la mascota" />
+                <div>
+                  <span>Foto seleccionada</span>
+                  <strong>{imagen.name}</strong>
+                  <small>{(imagen.size / 1024 / 1024).toFixed(2)} MB</small>
                 </div>
-              )}
-            </div>
+                <label htmlFor="imagen">Reemplazar</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagen(null);
+                    document.getElementById('imagen').value = '';
+                  }}
+                  aria-label="Quitar imagen"
+                >×</button>
+              </div>
+            )}
             
             <div className="flex items-start gap-2 text-xs text-gray-500 bg-blue-50 border border-blue-200 rounded-lg p-2">
               <span className="text-blue-600 mt-0.5">💡</span>
@@ -483,10 +482,11 @@ const BuscaTuMascota = () => {
               </div>
             </div>
           </div>
-        </div>
+          <button type="button" className="form-next" onClick={avanzarAContacto}>Continuar con mis datos <span>→</span></button>
+        </div>}
 
         {/* Información de Contacto */}
-        <div className="space-y-6">
+        {paso === 2 && <div className="form-step space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b-2 border-indigo-200">
             <img src="/icons/telephoneicon.png" alt="Contacto" className="w-8 h-8 md:w-10 md:h-10" />
             <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -645,26 +645,13 @@ const BuscaTuMascota = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 md:py-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-              Enviando...
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <img src="/icons/pet2icon.png" alt="Mascota" className="w-5 h-5 md:w-6 md:h-6" />
-              Publicar Mascota
-              <img src="/icons/pet2icon.png" alt="Mascota" className="w-5 h-5 md:w-6 md:h-6" />
-            </span>
-          )}
-        </button>
+          <div className="form-step-actions">
+            <button type="button" className="form-back" onClick={() => setPaso(1)}>← Volver</button>
+            <button type="submit" disabled={loading} className="form-submit">
+              {loading ? 'Enviando...' : 'Publicar mascota'}
+            </button>
+          </div>
+        </div>}
 
         {mensaje.texto && (
           <div

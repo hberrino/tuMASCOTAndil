@@ -1,2 +1,13 @@
-/* Estilos para el componente Veterinarias */
-/* Mobile first - los estilos base son para móvil */
+.vet-carousel { margin-bottom:3rem; }
+.vet-carousel-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+.vet-carousel-head > span { color:var(--muted); font-size:.76rem; font-weight:800; letter-spacing:.12em; }
+.vet-carousel-head > div { display:flex; gap:.55rem; }
+.vet-carousel-head button { width:44px; height:44px; border:1px solid rgba(25,72,65,.18); border-radius:50%; color:var(--forest); background:#fffdf8; font-size:1.15rem; transition:.2s; }
+.vet-carousel-head button:hover { color:white; background:var(--forest); transform:translateY(-2px); }
+.vet-carousel-track { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
+.vet-carousel-track > * { animation:vetIn .45s ease both; }
+.vet-dots { display:flex; justify-content:center; gap:6px; margin-top:1.5rem; }
+.vet-dots span { width:6px; height:6px; border-radius:99px; background:#cbd5d1; transition:.25s; }
+.vet-dots span.active { width:24px; background:var(--coral); }
+@keyframes vetIn { from { opacity:0; transform:translateX(16px); } }
+@media (max-width:800px) { .vet-carousel-track { grid-template-columns:1fr; }.vet-carousel-track > *:not(:first-child) { display:none; } }

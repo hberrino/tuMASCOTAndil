@@ -210,6 +210,8 @@ const Admin = ({ onClose }) => {
       await ejecutarEliminar(id);
     } else if (tipo === 'rechazar') {
       await ejecutarRechazar(id);
+    } else if (tipo === 'eliminarAviso') {
+      await ejecutarEliminarAviso(id);
     }
   };
 
@@ -329,13 +331,13 @@ const Admin = ({ onClose }) => {
       setLoading(true);
       setMensaje({ tipo: '', texto: '' });
       await eliminarAvisoEncuentro(id, savedUsername, savedPassword);
+      setAvisosEncuentro((avisosActuales) =>
+        avisosActuales.filter((aviso) => aviso.id !== id)
+      );
       setMensaje({
         tipo: 'success',
         texto: 'Aviso eliminado exitosamente.',
       });
-      setTimeout(async () => {
-        await cargarAvisosEncuentro();
-      }, 500);
     } catch (err) {
       let errorMessage = 'Error al eliminar el aviso. Intenta nuevamente.';
       

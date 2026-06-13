@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Inicio from './components/Inicio';
 import Perdidos from './components/Perdidos';
@@ -10,15 +10,6 @@ import Footer from './components/Footer';
 import './App.css';
 
 function App() {
-  const sectionsRef = useRef({
-    inicio: useRef(null),
-    perdidos: useRef(null),
-    encontrados: useRef(null),
-    buscaTuMascota: useRef(null),
-    reportarEncuentro: useRef(null),
-    veterinarias: useRef(null),
-  });
-
   // Scroll reveal effect
   useEffect(() => {
     const observerOptions = {
@@ -43,41 +34,30 @@ function App() {
   }, []);
 
   const scrollToSection = (sectionId) => {
-    const section = sectionsRef.current[sectionId]?.current;
+    const sectionIds = {
+      inicio: 'inicio',
+      perdidos: 'perdidos',
+      encontrados: 'encontrados',
+      buscaTuMascota: 'busca-tu-mascota',
+      reportarEncuentro: 'reportar-encuentro',
+      veterinarias: 'veterinarias',
+    };
+    const section = document.getElementById(sectionIds[sectionId]);
     if (section) {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Fondo con gradiente y formas decorativas */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        {/* Gradiente base */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"></div>
-        
-        {/* Formas decorativas circulares */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute top-1/4 right-0 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl translate-x-1/2"></div>
-        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-200/20 rounded-full blur-3xl -translate-y-1/2"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
-        
-        {/* Patrón de puntos sutiles */}
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `radial-gradient(circle, #6366f1 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        ></div>
-      </div>
+    <div className="app">
+      <div className="app-loader"><div className="loader-brand">Tu Mascota<span>.</span></div></div>
+      <div className="site-background" />
 
       <Navbar onNavigate={scrollToSection} />
       
       <main className="main-content relative z-10">
         {/* Sección Inicio */}
         <section
-          ref={sectionsRef.current.inicio}
           id="inicio"
           className="min-h-screen flex items-center justify-center px-4 py-16 fade-in relative"
         >
@@ -86,7 +66,6 @@ function App() {
 
         {/* Sección Perdidos */}
         <section
-          ref={sectionsRef.current.perdidos}
           id="perdidos"
           className="min-h-screen px-4 py-16 fade-in relative"
         >
@@ -95,7 +74,6 @@ function App() {
 
         {/* Sección Encontrados */}
         <section
-          ref={sectionsRef.current.encontrados}
           id="encontrados"
           className="min-h-screen px-4 py-16 fade-in relative"
         >
@@ -104,7 +82,6 @@ function App() {
 
         {/* Sección Busca tu Mascota */}
         <section
-          ref={sectionsRef.current.buscaTuMascota}
           id="busca-tu-mascota"
           className="min-h-screen px-4 py-16 fade-in relative"
         >
@@ -113,7 +90,6 @@ function App() {
 
         {/* Sección Reportar Encuentro */}
         <section
-          ref={sectionsRef.current.reportarEncuentro}
           id="reportar-encuentro"
           className="min-h-screen px-4 py-16 fade-in relative"
         >
@@ -122,7 +98,6 @@ function App() {
 
         {/* Sección Veterinarias */}
         <section
-          ref={sectionsRef.current.veterinarias}
           id="veterinarias"
           className="min-h-screen px-4 py-16 fade-in relative"
         >
